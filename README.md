@@ -377,7 +377,7 @@ Created and maintained by **Abubakar Issa**.
 
 | | |
 |---|---|
-| 🐙 GitHub | [github.com/Teewhydot](https://github.com/Teewhydot) |
+| 🐙 GitHub | [github.com/Teewhydot/bloc_manager](https://github.com/Teewhydot/bloc_manager) |
 | 💼 LinkedIn | [linkedin.com/in/issa-abubakar-a0a200189](https://www.linkedin.com/in/issa-abubakar-a0a200189/) |
 | 🌐 Portfolio | [sirteefyapps.com.ng](https://sirteefyapps.com.ng/) |
 
