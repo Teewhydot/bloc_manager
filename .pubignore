@@ -1,0 +1,8 @@
+# Build artefacts – never publish these
+build/
+.dart_tool/
+.packages
+pubspec.lock
+
+# Test artefacts
+coverage/

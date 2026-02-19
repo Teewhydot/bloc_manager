@@ -1,0 +1,36 @@
+name: bloc_manager
+description: >-
+  A Flutter BLoC management package that eliminates boilerplate state-management
+  code. Provides a sealed BaseState hierarchy, BlocManager widget with auto
+  loading/error/success handling, and
+  CacheableBlocMixin, PaginationBlocMixin, RefreshableBlocMixin utilities for
+  consistent state management across projects.
+version: 1.1.1
+homepage: https://sirteefyapps.com.ng/
+repository: https://github.com/Teewhydot/bloc_manager
+issue_tracker: https://github.com/Teewhydot/bloc_manager/issues
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bloc: ^8.1.4
+  flutter_bloc: ^8.1.6
+  equatable: ^2.0.5
+  meta: ^1.15.0
+  flutter_spinkit: ^5.2.1
+  loading_overlay: ">=0.3.0 <1.0.0"
+  ansicolor: ^2.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  bloc_test: ^9.1.7
+  mocktail: ^1.0.4
+
+flutter:
+  # No assets or fonts needed for this package
