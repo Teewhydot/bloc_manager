@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] – 2026-02-28
+
+### Added
+- **Comprehensive example app** with 4 feature tabs demonstrating all bloc_manager capabilities:
+  - **Posts Tab**: PaginationBlocMixin with infinite scroll pagination (JSONPlaceholder API)
+  - **Pokemon Tab**: CacheableBlocMixin with 10-minute TTL cache and visual "From Cache" badge (PokeAPI)
+  - **Products Tab**: RefreshableBlocMixin with pull-to-refresh and 30-second auto-refresh (Fake Store API)
+  - **Todos Tab**: All BaseState types with color-coded state banner showing current state (JSONPlaceholder)
+- Example app uses real public APIs for production-ready demonstrations
+- Updated README with detailed example app documentation and feature breakdown
+- Central BlocProvider registry in home screen for clean architecture
+
+### Changed
+- TodosCubit: Fixed `toggleTodo` and `deleteTodo` to re-emit LoadedState after SuccessState, preventing UI data loss
+- PokemonCubit: Search now checks cache before API call for improved performance
+- Improved example app code with inline comments explaining each feature
+
+### Fixed
+- Todos list no longer disappears when marking items as completed
+- Pokemon cache now shows "From Cache" badge when searching for same Pokemon
+
 ## [1.1.2] – 2026-02-28
 
 ### Changed
