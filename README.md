@@ -38,113 +38,7 @@ dependencies:
 
 ## How to Use
 
-### 1 · States — no subclassing needed
-
-You do not need to declare any custom state classes. Just pick from the sealed hierarchy:
-
-```dart
-import 'package:bloc_manager/bloc_manager.dart';
-
-// Loading
-emit(const LoadingState<User>());
-
-// Data ready
-emit(LoadedState<User>(data: user, lastUpdated: DateTime.now()));
-
-// Write operation done
-emit(SuccessState<User>(successMessage: 'Profile saved!'));
-
-// Failed
-emit(ErrorState<User>(errorMessage: 'Network error', errorCode: 'NET_01'));
-
-// Empty result
-emit(const EmptyState<User>(message: 'No results found'));
-```
-
----
-
-### 2 · `BaseCubit` — async made simple
-
-```dart
-class UserCubit extends BaseCubit<BaseState<User>> {
-  UserCubit(this._repo) : super(const InitialState());
-  final UserRepository _repo;
-
-  // executeAsync: emits LoadingState → runs action → emits result
-  Future<void> loadUser(String id) => executeAsync(
-    () => _repo.fetchUser(id),
-    onSuccess: (user) =>
-        LoadedState(data: user, lastUpdated: DateTime.now()),
-    loadingMessage: 'Loading profile…',
-  );
-
-  Future<void> updateUser(String name) => executeAsync(
-    () => _repo.update(name),
-    successMessage: 'Profile updated!', // auto emits SuccessState
-  );
-
-  // Fine-grained helpers are also available directly:
-  void somethingFailed(String msg) =>
-      emitError(msg, errorCode: 'E01');
-}
-```
-
-`executeAsync` signature:
-
-```dart
-Future<void> executeAsync<T>(
-  Future<T> Function() action, {
-  State Function(T result)? onSuccess,  // return your custom state
-  void Function(Exception e)? onError,  // override error handling
-  String? loadingMessage,
-  String? successMessage,
-})
-```
-
----
-
-### 3 · `BlocManager` — declarative UI wiring
-
-Replaces the manual `BlocConsumer` + loading-check + snackbar boilerplate:
-
-```dart
-BlocManager<UserCubit, BaseState<User>>(
-  bloc: context.read<UserCubit>(),
-  onSuccess: (ctx, state) => Navigator.of(ctx).pop(),
-  onError: (ctx, state) => MyAnalytics.log(state.errorMessage),
-  child: UserFormWidget(),
-)
-```
-
-This auto-wires:
-- Full-screen spinner during `LoadingState`
-- Red snackbar on `ErrorState` (disable with `showResultErrorNotifications: false`)
-- Green snackbar on `SuccessState` (opt-in with `showResultSuccessNotifications: true`)
-- `onSuccess` called for both `SuccessState` and `LoadedState`
-
-#### All parameters
-
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `bloc` | `B` | required | The BLoC/Cubit to observe |
-| `child` | `Widget` | required | Screen content |
-| `builder` | `(ctx, state) → Widget?` | `null` | Custom builder; replaces `child` when set |
-| `listener` | `(ctx, state) → void?` | `null` | Fires on every meaningful state change |
-| `onSuccess` | `(ctx, state) → void?` | `null` | Called on `SuccessState` or `LoadedState` |
-| `onError` | `(ctx, state) → void?` | `null` | Called on `ErrorState` |
-| `showLoadingIndicator` | `bool` | `true` | Full-screen overlay during `LoadingState` |
-| `showResultErrorNotifications` | `bool?` | `null` | Auto red snackbar on error; `null` inherits from `BlocManagerTheme` |
-| `showResultSuccessNotifications` | `bool?` | `null` | Auto green snackbar on success; `null` inherits from `BlocManagerTheme` |
-| `enablePullToRefresh` | `bool` | `false` | Wraps content in `RefreshIndicator` |
-| `onRefresh` | `Future<void> Function()?` | `null` | Pull-to-refresh callback |
-| `loadingWidget` | `Widget?` | `null` | Custom spinner (default: `SpinKitCircle`) |
-| `loadingColor` | `Color?` | `null` | Overlay tint colour |
-| `errorSnackbarColor` | `Color` | `#B00020` | Error snackbar background |
-| `successSnackbarColor` | `Color` | `#388E3C` | Success snackbar background |
-
----
-
-### 4 · `BlocManagerTheme` — app-wide branding
+### 1 · `BlocManagerTheme` — app-wide branding
 
 Instead of repeating `loadingColor`, `onError`, and `onSuccess` on every `BlocManager` instance,
 set them once at the app root and have every instance inherit automatically.
@@ -216,6 +110,112 @@ BlocManager<AuthCubit, BaseState<AuthData>>(
   child: LoginForm(),
 )
 ```
+
+---
+
+### 2 · States — no subclassing needed
+
+You do not need to declare any custom state classes. Just pick from the sealed hierarchy:
+
+```dart
+import 'package:bloc_manager/bloc_manager.dart';
+
+// Loading
+emit(const LoadingState<User>());
+
+// Data ready
+emit(LoadedState<User>(data: user, lastUpdated: DateTime.now()));
+
+// Write operation done
+emit(SuccessState<User>(successMessage: 'Profile saved!'));
+
+// Failed
+emit(ErrorState<User>(errorMessage: 'Network error', errorCode: 'NET_01'));
+
+// Empty result
+emit(const EmptyState<User>(message: 'No results found'));
+```
+
+---
+
+### 3 · `BaseCubit` — async made simple
+
+```dart
+class UserCubit extends BaseCubit<BaseState<User>> {
+  UserCubit(this._repo) : super(const InitialState());
+  final UserRepository _repo;
+
+  // executeAsync: emits LoadingState → runs action → emits result
+  Future<void> loadUser(String id) => executeAsync(
+    () => _repo.fetchUser(id),
+    onSuccess: (user) =>
+        LoadedState(data: user, lastUpdated: DateTime.now()),
+    loadingMessage: 'Loading profile…',
+  );
+
+  Future<void> updateUser(String name) => executeAsync(
+    () => _repo.update(name),
+    successMessage: 'Profile updated!', // auto emits SuccessState
+  );
+
+  // Fine-grained helpers are also available directly:
+  void somethingFailed(String msg) =>
+      emitError(msg, errorCode: 'E01');
+}
+```
+
+`executeAsync` signature:
+
+```dart
+Future<void> executeAsync<T>(
+  Future<T> Function() action, {
+  State Function(T result)? onSuccess,  // return your custom state
+  void Function(Exception e)? onError,  // override error handling
+  String? loadingMessage,
+  String? successMessage,
+})
+```
+
+---
+
+### 4 · `BlocManager` — declarative UI wiring
+
+Replaces the manual `BlocConsumer` + loading-check + snackbar boilerplate:
+
+```dart
+BlocManager<UserCubit, BaseState<User>>(
+  bloc: context.read<UserCubit>(),
+  onSuccess: (ctx, state) => Navigator.of(ctx).pop(),
+  onError: (ctx, state) => MyAnalytics.log(state.errorMessage),
+  child: UserFormWidget(),
+)
+```
+
+This auto-wires:
+- Full-screen spinner during `LoadingState`
+- Red snackbar on `ErrorState` (disable with `showResultErrorNotifications: false`)
+- Green snackbar on `SuccessState` (opt-in with `showResultSuccessNotifications: true`)
+- `onSuccess` called for both `SuccessState` and `LoadedState`
+
+#### All parameters
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `bloc` | `B` | required | The BLoC/Cubit to observe |
+| `child` | `Widget` | required | Screen content |
+| `builder` | `(ctx, state) → Widget?` | `null` | Custom builder; replaces `child` when set |
+| `listener` | `(ctx, state) → void?` | `null` | Fires on every meaningful state change |
+| `onSuccess` | `(ctx, state) → void?` | `null` | Called on `SuccessState` or `LoadedState` |
+| `onError` | `(ctx, state) → void?` | `null` | Called on `ErrorState` |
+| `showLoadingIndicator` | `bool` | `true` | Full-screen overlay during `LoadingState` |
+| `showResultErrorNotifications` | `bool?` | `null` | Auto red snackbar on error; `null` inherits from `BlocManagerTheme` |
+| `showResultSuccessNotifications` | `bool?` | `null` | Auto green snackbar on success; `null` inherits from `BlocManagerTheme` |
+| `enablePullToRefresh` | `bool` | `false` | Wraps content in `RefreshIndicator` |
+| `onRefresh` | `Future<void> Function()?` | `null` | Pull-to-refresh callback |
+| `loadingWidget` | `Widget?` | `null` | Custom spinner (default: `SpinKitCircle`) |
+| `loadingColor` | `Color?` | `null` | Overlay tint colour |
+| `errorSnackbarColor` | `Color` | `#B00020` | Error snackbar background |
+| `successSnackbarColor` | `Color` | `#388E3C` | Success snackbar background |
 
 ---
 
@@ -371,6 +371,26 @@ cd example && flutter pub get && flutter run
 
 ---
 
+## Contributing
+
+Contributions are welcome! If you'd like to contribute to `bloc_manager`, please follow these steps:
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+Please feel free to:
+- Report bugs via [GitHub Issues](https://github.com/Teewhydot/bloc_manager/issues)
+- Suggest new features or enhancements
+- Submit pull requests for bug fixes or new features
+- Improve documentation
+
+All contributions are appreciated, and help make this package better for everyone!
+
+---
+
 ## Author
 
 Created and maintained by **Abubakar Issa**.
@@ -379,10 +399,7 @@ Created and maintained by **Abubakar Issa**.
 |---|---|
 | 🐙 GitHub | [github.com/Teewhydot/bloc_manager](https://github.com/Teewhydot/bloc_manager) |
 | 💼 LinkedIn | [linkedin.com/in/issa-abubakar-a0a200189](https://www.linkedin.com/in/issa-abubakar-a0a200189/) |
-| 🌐 Portfolio | [sirteefyapps.com.ng](https://sirteefyapps.com.ng/) |
-
-Contributions, issues, and feature requests are welcome —
-open a ticket on [GitHub Issues](https://github.com/Teewhydot/bloc_manager/issues).
+| 🌐 Portfolio | [sirteefyapps.com.ng](https://sirteefyapps.com.ng/)
 
 ---
 
