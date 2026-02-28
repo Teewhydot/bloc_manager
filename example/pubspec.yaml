@@ -1,0 +1,25 @@
+name: bloc_manager_example
+description: Example app demonstrating bloc_manager package features.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  bloc_manager:
+    path: ../
+  dio: ^5.4.0
+  equatable: ^2.0.5
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

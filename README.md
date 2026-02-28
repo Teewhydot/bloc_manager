@@ -363,11 +363,65 @@ All states extend `Equatable` and have descriptive `toString()` for logging.
 
 ## Example App
 
-A runnable counter example lives in [`example/`](example/):
+A comprehensive example app demonstrating all `bloc_manager` features lives in [`example/`](example/).
+
+The example app uses **real public APIs** to showcase production-ready implementations:
+
+| Tab | Feature | API | Demonstrates |
+|-----|---------|-----|--------------|
+| **Posts** | PaginationBlocMixin | JSONPlaceholder Posts | Infinite scroll pagination with page indicators |
+| **Pokemon** | CacheableBlocMixin | PokeAPI | In-memory caching with 10-minute TTL and visual "From Cache" badge |
+| **Products** | RefreshableBlocMixin | Fake Store API | Pull-to-refresh + auto-refresh every 30 seconds |
+| **Todos** | All BaseState types | JSONPlaceholder Todos | Complete state flow: Initial → Loading → Loaded → Success/Error/Empty |
+
+### Running the Example
 
 ```sh
 cd example && flutter pub get && flutter run
 ```
+
+### What You'll Learn
+
+Each tab is self-contained and demonstrates real-world patterns:
+
+1. **Posts Tab** - Infinite scroll pagination with:
+   - `loadFirstPage()` / `loadNextPage()` methods
+   - `PaginationInfo` with page numbers and total count
+   - Loading indicators for additional pages
+
+2. **Pokemon Tab** - Smart caching with:
+   - Cache checking before API calls (search same Pokemon twice)
+   - Orange "From Cache" badge indicator
+   - Cache TTL (10 minutes)
+   - Manual cache controls (restore/clear)
+
+3. **Products Tab** - Refresh capabilities with:
+   - Pull-to-refresh gesture support
+   - Auto-refresh timer (30 seconds for demo)
+   - Refresh cooldown protection
+   - "Last updated" timestamp
+
+4. **Todos Tab** - Complete state management with:
+   - All 6 BaseState types demonstrated
+   - State banner showing current state with color coding
+   - SuccessState snackbars on actions
+   - Force error button for testing ErrorState
+
+### Architecture
+
+```
+example/
+├── lib/
+│   ├── main.dart                 # BlocManagerTheme setup
+│   ├── models/                   # Post, Pokemon, Product, Todo
+│   ├── repositories/             # Dio-based API client + repos
+│   ├── cubits/                   # All feature cubits
+│   ├── screens/                  # Tab screens
+│   └── widgets/                  # PokemonCard, LoadingCard, ErrorCard
+└── README.md                     # Example-specific docs
+```
+
+See [`example/README.md`](example/README.md) for detailed implementation notes.
 
 ---
 
