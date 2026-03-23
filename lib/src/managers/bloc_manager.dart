@@ -225,19 +225,21 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
             result = RefreshIndicator(onRefresh: onRefresh!, child: content);
           }
 
-          if (showLoadingIndicator && state.isLoading) {
-            final overlayColor = effectiveLoadingColor ??
-                Theme.of(context).primaryColor.withValues(alpha: 0.5);
-            return LoadingOverlay(
-              isLoading: true,
-              color: overlayColor,
-              progressIndicator: effectiveLoadingWidget ??
-                  const SpinKitCircle(color: Colors.white, size: 50.0),
-              child: result,
-            );
+          if (!showLoadingIndicator) {
+            return result;
           }
 
-          return result;
+          // Keep the same loading wrapper in the tree and only toggle isLoading.
+          // This avoids disposing child state when loading starts or stops.
+          final overlayColor = effectiveLoadingColor ??
+              Theme.of(context).primaryColor.withValues(alpha: 0.5);
+          return LoadingOverlay(
+            isLoading: state.isLoading,
+            color: overlayColor,
+            progressIndicator: effectiveLoadingWidget ??
+                const SpinKitCircle(color: Colors.white, size: 50.0),
+            child: result,
+          );
         },
       ),
     );

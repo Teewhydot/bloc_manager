@@ -3,7 +3,7 @@
 [![pub.dev](https://img.shields.io/pub/v/bloc_manager.svg)](https://pub.dev/packages/bloc_manager)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A Flutter BLoC management package by **[Abubakar Issa](https://sirteefyapps.com.ng/)** that
+A Flutter BLoC management package that
 eliminates boilerplate state-management code by providing a ready-made sealed-state
 hierarchy, a declarative `BlocManager` widget, and reusable mixins for caching,
 pagination, and pull-to-refresh.
