@@ -1,3 +1,19 @@
+
+## [1.3.0] - 2026-05-27
+
+### Added
+- `LoadingIndicatorStyle` enum with `fullScreen` (default) and `bottomSheet` options for configurable loading UI.
+- `BlocBottomSheetWidget` — a bottom-sheet style loading indicator anchored at the bottom of the screen.
+- `BlocManagerThemeData.loadingStyle` — configure the loading indicator style app-wide.
+- `BlocManagerThemeData.bottomSheetTrailingWidget` — optional trailing widget for bottom-sheet loading indicators.
+- Example `DemoScreen` showcasing both full-screen and bottom-sheet loading styles.
+
+### Changed
+- `BlocManager` now respects the configured `loadingStyle` from theme data.
+- `TodosScreen` in the example app updated to use bottom-sheet loading style.
+- `LoadingCard` now uses `CircularProgressIndicator.adaptive()` for better platform integration.
+- Wrapped loading container in `Material` widget to ensure proper styling context.
+
 # Changelog
 
 All notable changes to this project will be documented in this file.
