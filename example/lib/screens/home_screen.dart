@@ -10,6 +10,7 @@ import 'posts_screen.dart';
 import 'pokemon_screen.dart';
 import 'products_screen.dart';
 import 'todos_screen.dart';
+import 'demo_screen.dart';
 
 /// Main home screen with tab navigation.
 /// Each tab demonstrates a different bloc_manager feature.
@@ -80,6 +81,7 @@ class _HomeContent extends StatelessWidget {
     PokemonScreen(),
     ProductsScreen(),
     TodosScreen(),
+    DemoScreen(),
   ];
 
   @override
@@ -112,6 +114,11 @@ class _HomeContent extends StatelessWidget {
             icon: Icon(Icons.check_circle),
             label: 'Todos',
             selectedIcon: Icon(Icons.check_circle_outline),
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.play_circle),
+            label: 'Demo',
+            selectedIcon: Icon(Icons.play_circle_outline),
           ),
         ],
       ),

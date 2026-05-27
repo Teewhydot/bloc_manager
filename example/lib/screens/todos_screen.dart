@@ -43,6 +43,13 @@ class TodosScreen extends StatelessWidget {
       ),
       body: BlocManager<TodosCubit, BaseState<List<dynamic>>>(
         bloc: cubit,
+        loadingStyle: LoadingIndicatorStyle.bottomSheet,
+        loadingWidget: const BlocBottomSheetWidget(
+          trailingWidget: Padding(
+            padding: EdgeInsets.only(right: 8.0),
+            child: Icon(Icons.downloading, color: Colors.blue),
+          ),
+        ),
         showResultSuccessNotifications: true, // Show green snackbar on SuccessState
         child: Column(
           children: [

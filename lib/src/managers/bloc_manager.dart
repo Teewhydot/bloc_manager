@@ -6,6 +6,8 @@ import 'package:loading_overlay/loading_overlay.dart';
 import '../base/base_state.dart';
 import '../utils/logger.dart';
 import 'bloc_manager_theme.dart';
+import 'bottom_sheet_loading_wrapper.dart';
+import 'loading_indicator_style.dart';
 
 /// A declarative widget that wraps a BLoC/Cubit and handles the common
 /// cross-cutting concerns automatically:
@@ -94,9 +96,17 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
 
   // ── Visual customisation ──────────────────────────────────────────────────
 
+  /// The style of the loading indicator.
+  /// `null` inherits from [BlocManagerTheme], then falls back to [LoadingIndicatorStyle.fullScreenOverlay].
+  final LoadingIndicatorStyle? loadingStyle;
+
   /// Replaces the default [SpinKitCircle] while loading.
   /// `null` inherits from [BlocManagerTheme], then falls back to SpinKitCircle.
   final Widget? loadingWidget;
+
+  /// Optional trailing widget to display on the right side of the bottom sheet.
+  /// `null` inherits from [BlocManagerTheme].
+  final Widget? bottomSheetTrailingWidget;
 
   /// Tint colour for the loading overlay.
   /// `null` inherits from [BlocManagerTheme], then falls back to primary/50%.
@@ -117,12 +127,14 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
     this.onError,
     this.onSuccess,
     this.showLoadingIndicator = true,
-    this.showResultErrorNotifications,   // null = inherit from theme
+    this.showResultErrorNotifications, // null = inherit from theme
     this.showResultSuccessNotifications, // null = inherit from theme
     this.enablePullToRefresh = false,
     this.onRefresh,
-    this.loadingWidget,   // null = inherit from theme
-    this.loadingColor,    // null = inherit from theme
+    this.loadingStyle, // null = inherit from theme
+    this.loadingWidget, // null = inherit from theme
+    this.bottomSheetTrailingWidget, // null = inherit from theme
+    this.loadingColor, // null = inherit from theme
     this.errorSnackbarColor = const Color(0xFFB00020),
     this.successSnackbarColor = const Color(0xFF388E3C),
   });
@@ -134,6 +146,9 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
     // Resolve effective values: instance → theme → built-in default
     final effectiveLoadingWidget = loadingWidget ?? theme.loadingWidget;
     final effectiveLoadingColor = loadingColor ?? theme.loadingColor;
+    final effectiveLoadingStyle = loadingStyle ?? theme.loadingStyle;
+    final effectiveTrailingWidget =
+        bottomSheetTrailingWidget ?? theme.bottomSheetTrailingWidget;
     final effectiveShowErrors =
         showResultErrorNotifications ?? theme.showResultErrorNotifications;
     final effectiveShowSuccess =
@@ -233,6 +248,18 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
           // This avoids disposing child state when loading starts or stops.
           final overlayColor = effectiveLoadingColor ??
               Theme.of(context).primaryColor.withValues(alpha: 0.5);
+
+          if (effectiveLoadingStyle == LoadingIndicatorStyle.bottomSheet) {
+            return BottomSheetLoadingWrapper(
+              isLoading: state.isLoading,
+              overlayColor: overlayColor,
+              loadingWidget: effectiveLoadingWidget ??
+                  BlocBottomSheetWidget(
+                      trailingWidget: effectiveTrailingWidget),
+              child: result,
+            );
+          }
+
           return LoadingOverlay(
             isLoading: state.isLoading,
             color: overlayColor,
@@ -282,5 +309,54 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
         tag: 'BlocManager',
       );
     }
+  }
+}
+
+class BlocBottomSheetWidget extends StatelessWidget {
+  final Widget? trailingWidget;
+  const BlocBottomSheetWidget({super.key, this.trailingWidget});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 100,
+      width: double.infinity,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16),
+          topRight: Radius.circular(16),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 12,
+            offset: Offset(0, -2),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Row(
+        children: [
+          const SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator.adaptive(strokeWidth: 3),
+          ),
+          const SizedBox(width: 16),
+          const Expanded(
+            child: Text(
+              'Loading...',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: Colors.black87,
+              ),
+            ),
+          ),
+          if (trailingWidget != null) trailingWidget!,
+        ],
+      ),
+    );
   }
 }

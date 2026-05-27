@@ -44,7 +44,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
       ),
       body: BlocManager<PokemonCubit, BaseState<dynamic>>(
         bloc: cubit,
-        showLoadingIndicator: false,
         child: Column(
           children: [
             // Search bar
@@ -91,19 +90,6 @@ class _PokemonScreenState extends State<PokemonScreen> {
                             'Search for a Pokemon to get started!',
                             style: TextStyle(color: Colors.grey),
                           ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (state is LoadingState) {
-                    return const Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
-                          Text('Searching...'),
                         ],
                       ),
                     );

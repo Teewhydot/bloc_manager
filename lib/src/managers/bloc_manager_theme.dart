@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'loading_indicator_style.dart';
+
 /// Global defaults for every [BlocManager] in the widget tree.
 ///
 /// Place this once at the root of your app to enforce consistent branding
@@ -45,13 +47,21 @@ class BlocManagerTheme extends InheritedWidget {
 /// All fields are optional — unset fields fall back to the [BlocManager]
 /// built-in defaults.
 class BlocManagerThemeData {
+  /// The style of the loading indicator.
+  /// Defaults to [LoadingIndicatorStyle.fullScreenOverlay].
+  final LoadingIndicatorStyle loadingStyle;
+
   /// Widget shown inside the loading overlay.
   /// Defaults to a white [SpinKitCircle].
   final Widget? loadingWidget;
 
   /// Tint colour for the loading overlay.
   /// Defaults to the primary colour at 50 % opacity.
+  /// Set to [Colors.transparent] to remove the tint completely.
   final Color? loadingColor;
+
+  /// Optional trailing widget to display on the right side of the bottom sheet.
+  final Widget? bottomSheetTrailingWidget;
 
   /// Called when any [ErrorState] is received.
   /// Receives the [BuildContext] and the error message string.
@@ -71,8 +81,10 @@ class BlocManagerThemeData {
   final bool showResultSuccessNotifications;
 
   const BlocManagerThemeData({
+    this.loadingStyle = LoadingIndicatorStyle.fullScreenOverlay,
     this.loadingWidget,
     this.loadingColor,
+    this.bottomSheetTrailingWidget,
     this.onError,
     this.onSuccess,
     this.showResultErrorNotifications = true,
@@ -84,8 +96,10 @@ class BlocManagerThemeData {
       identical(this, other) ||
       other is BlocManagerThemeData &&
           runtimeType == other.runtimeType &&
+          loadingStyle == other.loadingStyle &&
           loadingWidget == other.loadingWidget &&
           loadingColor == other.loadingColor &&
+          bottomSheetTrailingWidget == other.bottomSheetTrailingWidget &&
           onError == other.onError &&
           onSuccess == other.onSuccess &&
           showResultErrorNotifications == other.showResultErrorNotifications &&
@@ -93,8 +107,10 @@ class BlocManagerThemeData {
 
   @override
   int get hashCode => Object.hash(
+        loadingStyle,
         loadingWidget,
         loadingColor,
+        bottomSheetTrailingWidget,
         onError,
         onSuccess,
         showResultErrorNotifications,
