@@ -5,6 +5,8 @@ import 'package:loading_overlay/loading_overlay.dart';
 
 import '../base/base_state.dart';
 import '../utils/logger.dart';
+import '../widgets/skeleton_config.dart';
+import '../widgets/skeleton_widget.dart';
 import 'bloc_manager_theme.dart';
 import 'bottom_sheet_loading_wrapper.dart';
 import 'loading_indicator_style.dart';
@@ -118,6 +120,27 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
   /// Background colour for the built-in success snackbar.
   final Color successSnackbarColor;
 
+  // ── Skeleton loading ──────────────────────────────────────────────────────
+
+  /// Configuration for skeletal loading placeholders shown during
+  /// [LoadingState] and [InitialState].
+  ///
+  /// When set, skeleton widgets replace the content area while the bloc is
+  /// loading, giving users a visual preview of the layout. The existing loading
+  /// overlay (spinner/bottom-sheet) still works alongside if
+  /// [showLoadingIndicator] is enabled.
+  ///
+  /// `null` (default) inherits from [BlocManagerTheme].
+  final SkeletonConfig? skeletonConfig;
+
+  /// Shimmer base colour for skeleton loading.
+  /// `null` inherits from [BlocManagerTheme], then falls back to `Colors.grey[300]`.
+  final Color? skeletonBaseColor;
+
+  /// Shimmer highlight colour for skeleton loading.
+  /// `null` inherits from [BlocManagerTheme], then falls back to `Colors.grey[100]`.
+  final Color? skeletonHighlightColor;
+
   const BlocManager({
     super.key,
     required this.bloc,
@@ -135,6 +158,9 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
     this.loadingWidget, // null = inherit from theme
     this.bottomSheetTrailingWidget, // null = inherit from theme
     this.loadingColor, // null = inherit from theme
+    this.skeletonConfig, // null = inherit from theme
+    this.skeletonBaseColor, // null = inherit from theme
+    this.skeletonHighlightColor, // null = inherit from theme
     this.errorSnackbarColor = const Color(0xFFB00020),
     this.successSnackbarColor = const Color(0xFF388E3C),
   });
@@ -153,6 +179,12 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
         showResultErrorNotifications ?? theme.showResultErrorNotifications;
     final effectiveShowSuccess =
         showResultSuccessNotifications ?? theme.showResultSuccessNotifications;
+    final effectiveSkeletonConfig =
+        skeletonConfig ?? theme.skeletonConfig;
+    final effectiveSkeletonBaseColor =
+        skeletonBaseColor ?? theme.skeletonBaseColor;
+    final effectiveSkeletonHighlightColor =
+        skeletonHighlightColor ?? theme.skeletonHighlightColor;
 
     return BlocProvider<T>.value(
       value: bloc,
@@ -232,7 +264,20 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
           listener?.call(context, state);
         },
         builder: (context, state) {
-          final content = builder != null ? builder!(context, state) : child;
+          // ── Show skeleton placeholders during loading states ───────────
+          final showSkeletons = effectiveSkeletonConfig != null &&
+              (state.isLoading || state.isInitial);
+
+          Widget content;
+          if (showSkeletons) {
+            content = SkeletonListWidget(
+              config: effectiveSkeletonConfig,
+              resolvedBaseColor: effectiveSkeletonBaseColor,
+              resolvedHighlightColor: effectiveSkeletonHighlightColor,
+            );
+          } else {
+            content = builder != null ? builder!(context, state) : child;
+          }
 
           Widget result = content;
 

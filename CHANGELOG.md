@@ -1,4 +1,22 @@
 
+## [1.4.0] - 2026-05-29
+
+### Added
+- **Skeleton loading support** with shimmer animation — `BlocManager` now shows skeleton placeholders during `LoadingState`/`InitialState`.
+- `SkeletonConfig` class to configure skeleton layout (list, grid, row, wrap), item count, spacing, and shimmer colours.
+- `SkeletonListWidget` — renders skeleton items in non-scrollable layouts for safe nesting inside any parent widget.
+- `BlocManagerThemeData.skeletonBaseColor` and `.skeletonHighlightColor` for app-wide shimmer colour defaults.
+- `BlocManager.skeletonConfig`, `.skeletonBaseColor`, `.skeletonHighlightColor` properties for per-instance skeleton configuration.
+- `BlocManager.builder` property — direct state-driven builder replacing the need for a nested `BlocBuilder`.
+- `showLoadingIndicator: false` support — disables the loading overlay when skeletons are used instead.
+- Comprehensive skeleton demo in `DemoScreen` with list, grid, row, and custom-colour sections.
+- Custom skeleton widgets for all example screens (`PostCardSkeleton`, `ProductCardSkeleton`, `TodoCardSkeleton`, `PokemonCardSkeleton`).
+
+### Changed
+- Example screens (`Posts`, `Products`, `Todos`, `Pokemon`) now use shimmer skeletons instead of `CircularProgressIndicator` for loading states.
+- Status bars and search bars moved outside `BlocManager` in example screens so skeleton only covers the content area.
+- Nested `BlocBuilder` inside `BlocManager.child` replaced with `BlocManager.builder` property throughout example app.
+
 ## [1.3.0] - 2026-05-27
 
 ### Added

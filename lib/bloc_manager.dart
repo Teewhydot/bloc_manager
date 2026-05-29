@@ -19,3 +19,7 @@ export 'src/mixins/refreshable_bloc_mixin.dart';
 
 // ── Utilities ────────────────────────────────────────────────────────────────
 export 'src/utils/logger.dart';
+
+// ── Skeleton loading ─────────────────────────────────────────────────────────
+export 'src/widgets/skeleton_config.dart';
+export 'src/widgets/skeleton_widget.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../widgets/skeleton_config.dart';
 import 'loading_indicator_style.dart';
 
 /// Global defaults for every [BlocManager] in the widget tree.
@@ -63,6 +64,20 @@ class BlocManagerThemeData {
   /// Optional trailing widget to display on the right side of the bottom sheet.
   final Widget? bottomSheetTrailingWidget;
 
+  // ── Skeleton loading ──────────────────────────────────────────────────────
+
+  /// Default [SkeletonConfig] applied to all [BlocManager] instances in the
+  /// tree that do not provide their own.
+  final SkeletonConfig? skeletonConfig;
+
+  /// Default shimmer base colour for skeleton loading.
+  /// Falls back to `Colors.grey[300]` when null.
+  final Color? skeletonBaseColor;
+
+  /// Default shimmer highlight colour for skeleton loading.
+  /// Falls back to `Colors.grey[100]` when null.
+  final Color? skeletonHighlightColor;
+
   /// Called when any [ErrorState] is received.
   /// Receives the [BuildContext] and the error message string.
   /// When set, replaces the default red snackbar globally.
@@ -85,6 +100,9 @@ class BlocManagerThemeData {
     this.loadingWidget,
     this.loadingColor,
     this.bottomSheetTrailingWidget,
+    this.skeletonConfig,
+    this.skeletonBaseColor,
+    this.skeletonHighlightColor,
     this.onError,
     this.onSuccess,
     this.showResultErrorNotifications = true,
@@ -100,6 +118,9 @@ class BlocManagerThemeData {
           loadingWidget == other.loadingWidget &&
           loadingColor == other.loadingColor &&
           bottomSheetTrailingWidget == other.bottomSheetTrailingWidget &&
+          skeletonConfig == other.skeletonConfig &&
+          skeletonBaseColor == other.skeletonBaseColor &&
+          skeletonHighlightColor == other.skeletonHighlightColor &&
           onError == other.onError &&
           onSuccess == other.onSuccess &&
           showResultErrorNotifications == other.showResultErrorNotifications &&
@@ -111,6 +132,9 @@ class BlocManagerThemeData {
         loadingWidget,
         loadingColor,
         bottomSheetTrailingWidget,
+        skeletonConfig,
+        skeletonBaseColor,
+        skeletonHighlightColor,
         onError,
         onSuccess,
         showResultErrorNotifications,
