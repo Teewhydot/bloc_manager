@@ -21,5 +21,6 @@ export 'src/mixins/refreshable_bloc_mixin.dart';
 export 'src/utils/logger.dart';
 
 // ── Skeleton loading ─────────────────────────────────────────────────────────
+export 'src/widgets/inline_skeleton.dart';
 export 'src/widgets/skeleton_config.dart';
 export 'src/widgets/skeleton_widget.dart';

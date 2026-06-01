@@ -9,7 +9,9 @@ import '../widgets/skeleton_config.dart';
 import '../widgets/skeleton_widget.dart';
 import 'bloc_manager_theme.dart';
 import 'bottom_sheet_loading_wrapper.dart';
+import 'frosted_glass_loading_wrapper.dart';
 import 'loading_indicator_style.dart';
+import 'top_progress_bar_loading_wrapper.dart';
 
 /// A declarative widget that wraps a BLoC/Cubit and handles the common
 /// cross-cutting concerns automatically:
@@ -301,6 +303,26 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
               loadingWidget: effectiveLoadingWidget ??
                   BlocBottomSheetWidget(
                       trailingWidget: effectiveTrailingWidget),
+              child: result,
+            );
+          }
+
+          if (effectiveLoadingStyle == LoadingIndicatorStyle.topProgressBar) {
+            return TopProgressBarLoadingWrapper(
+              isLoading: state.isLoading,
+              progressColor: effectiveLoadingColor ??
+                  Theme.of(context).colorScheme.primary,
+              child: result,
+            );
+          }
+
+          if (effectiveLoadingStyle == LoadingIndicatorStyle.frostedGlass) {
+            return FrostedGlassLoadingWrapper(
+              isLoading: state.isLoading,
+              overlayColor: effectiveLoadingColor ??
+                  const Color(0x26FFFFFF), // white at ~15% opacity
+              loadingWidget: effectiveLoadingWidget ??
+                  const SpinKitCircle(color: Colors.white, size: 50.0),
               child: result,
             );
           }

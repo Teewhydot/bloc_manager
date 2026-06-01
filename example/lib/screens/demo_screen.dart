@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_manager/bloc_manager.dart';
 
 // ─── Demo Cubit ──────────────────────────────────────────────────────────────
@@ -361,6 +362,301 @@ class _CustomShimmerDemoState extends State<CustomShimmerDemo> {
   }
 }
 
+// ─── Inline Skeleton Demo (manages its own cubit) ───────────────────────
+
+/// Skeleton placeholder for an avatar.
+class SkeletonAvatar extends StatelessWidget {
+  const SkeletonAvatar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const CircleAvatar(
+      radius: 30,
+      backgroundColor: Colors.white,
+    );
+  }
+}
+
+/// Skeleton placeholder for a text line at a given width.
+class SkeletonTextLine extends StatelessWidget {
+  final double width;
+  final double height;
+  const SkeletonTextLine({
+    super.key,
+    this.width = double.infinity,
+    this.height = 14,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+      ),
+    );
+  }
+}
+
+/// Skeleton placeholder for a stat badge.
+class SkeletonStat extends StatelessWidget {
+  const SkeletonStat({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 64,
+      height: 48,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(8),
+      ),
+    );
+  }
+}
+
+/// Demonstrates fine-grained inline skeleton loading using [InlineSkeleton].
+///
+/// The card header (title + description) stays visible at all times, while
+/// the avatar, text body, and stat badges are independently replaced with
+/// skeleton placeholders during loading. This shows how `InlineSkeleton`
+/// lets you control exactly which parts of your UI get skeletonized.
+class InlineSkeletonDemoCard extends StatefulWidget {
+  const InlineSkeletonDemoCard({super.key});
+
+  @override
+  State<InlineSkeletonDemoCard> createState() => _InlineSkeletonDemoCardState();
+}
+
+class _InlineSkeletonDemoCardState extends State<InlineSkeletonDemoCard> {
+  late final DemoSkeletonCubit _cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    _cubit = DemoSkeletonCubit();
+  }
+
+  @override
+  void dispose() {
+    _cubit.close();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: BlocManager<DemoSkeletonCubit, BaseState<String>>(
+        bloc: _cubit,
+        showLoadingIndicator: false,
+        showResultSuccessNotifications: false,
+        child: Card(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Header (always visible) ────────────────────────────
+                const Row(
+                  children: [
+                    Icon(Icons.touch_app, size: 40, color: Colors.pink),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Inline Skeleton',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            'Fine-grained skeletons for individual widgets',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+
+                // ── Profile card with inline skeletons ────────────────
+                BlocBuilder<DemoSkeletonCubit, BaseState<String>>(
+                  builder: (context, state) {
+                    final isLoading = state.isLoading;
+                    return Row(
+                      children: [
+                        // Avatar — independently skeletonised
+                        InlineSkeleton(
+                          isLoading: isLoading,
+                          skeleton: const SkeletonAvatar(),
+                          child: const CircleAvatar(
+                            radius: 30,
+                            backgroundImage: NetworkImage(
+                              'https://i.pravatar.cc/60?img=3',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 16),
+                        // Text body — independently skeletonised
+                        Expanded(
+                          child: InlineSkeleton(
+                            isLoading: isLoading,
+                            skeleton: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SkeletonTextLine(width: 160),
+                                SizedBox(height: 8),
+                                SkeletonTextLine(width: double.infinity),
+                                SizedBox(height: 6),
+                                SkeletonTextLine(width: 120, height: 12),
+                              ],
+                            ),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Jane Doe',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  'Senior Flutter developer passionate about'
+                                  ' beautiful UI and state management.',
+                                  style: TextStyle(color: Colors.grey),
+                                ),
+                                SizedBox(height: 2),
+                                Text(
+                                  'jane@example.com',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.blue,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // ── Stat badges — each independently skeletonised ─────
+                BlocBuilder<DemoSkeletonCubit, BaseState<String>>(
+                  builder: (context, state) {
+                    final isLoading = state.isLoading;
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        InlineSkeleton(
+                          isLoading: isLoading,
+                          skeleton: const SkeletonStat(),
+                          child: _StatBadge(
+                            icon: Icons.star,
+                            label: '128',
+                            color: Colors.amber,
+                          ),
+                        ),
+                        InlineSkeleton(
+                          isLoading: isLoading,
+                          skeleton: const SkeletonStat(),
+                          child: _StatBadge(
+                            icon: Icons.favorite,
+                            label: '356',
+                            color: Colors.red,
+                          ),
+                        ),
+                        InlineSkeleton(
+                          isLoading: isLoading,
+                          skeleton: const SkeletonStat(),
+                          child: _StatBadge(
+                            icon: Icons.share,
+                            label: '89',
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // ── Action button ─────────────────────────────────────
+                ElevatedButton.icon(
+                  onPressed: () => _cubit.simulateLoading(),
+                  icon: const Icon(Icons.play_arrow, size: 20),
+                  label: const Text('Simulate Loading'),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Header stays visible — only avatar, body, and stats skeletonize',
+                  style: TextStyle(fontSize: 11, color: Colors.grey),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StatBadge extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+
+  const _StatBadge({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: color),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 // ─── DemoSkeletonCubit (for skeleton demos) ─────────────────────────────────
 
 class DemoSkeletonCubit extends BaseCubit<BaseState<String>> {
@@ -471,6 +767,27 @@ class SkeletonDemoSection extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           const CustomShimmerDemo(),
+          const SizedBox(height: 32),
+
+          // Inline Skeleton Demo
+          const Text(
+            'Inline Skeleton',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              'Wrap individual widgets with InlineSkeleton to selectively '
+              'skeletonize specific parts of your UI while keeping the rest '
+              'visible and interactive.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: Colors.grey),
+            ),
+          ),
+          const SizedBox(height: 16),
+          const InlineSkeletonDemoCard(),
           const SizedBox(height: 32),
         ],
       ),
@@ -626,6 +943,84 @@ class LoadingStylesTab extends StatelessWidget {
                       ),
                     ),
                     child: const Text('Trigger Loading'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Top Progress Bar Demo
+          Card(
+            margin: EdgeInsets.zero,
+            elevation: 4,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.horizontal_rule,
+                      size: 48, color: Colors.teal),
+                  const SizedBox(height: 16),
+                  const Text('Top Progress Bar',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _triggerLoading(
+                      LoadingIndicatorStyle.topProgressBar,
+                      Colors.teal,
+                      null,
+                    ),
+                    child: const Text('Trigger Loading'),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Thin progress bar at top edge — non-intrusive, keeps full UI visible',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // Frosted Glass Overlay Demo
+          Card(
+            margin: EdgeInsets.zero,
+            elevation: 4,
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.zero,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.blur_on,
+                      size: 48, color: Colors.indigo),
+                  const SizedBox(height: 16),
+                  const Text('Frosted Glass',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => _triggerLoading(
+                      LoadingIndicatorStyle.frostedGlass,
+                      null,
+                      null,
+                    ),
+                    child: const Text('Trigger Loading'),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'Blurred backdrop with BackdropFilter — glass morphism loading overlay',
+                    style: TextStyle(fontSize: 11, color: Colors.grey),
                   ),
                 ],
               ),
