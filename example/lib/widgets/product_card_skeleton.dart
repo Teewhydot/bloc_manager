@@ -16,57 +16,57 @@ class ProductCardSkeleton extends StatelessWidget {
           // Image area
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(color: Colors.white),
+              decoration: const BoxDecoration(color: Color(0xFF424242)),
             ),
           ),
           // Text area
-          const Padding(
-            padding: EdgeInsets.all(8),
+          Padding(
+            padding: const EdgeInsets.all(8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Title line
-                SizedBox(
+                const SizedBox(
                   height: 12,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),
                 ),
                 SizedBox(height: 6),
                 // Title line 2
-                SizedBox(
+                const SizedBox(
                   height: 12,
                   width: 80,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),
                 ),
                 SizedBox(height: 8),
                 // Price line
-                SizedBox(
+                const SizedBox(
                   height: 14,
                   width: 60,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),
                 ),
                 SizedBox(height: 4),
                 // Category line
-                SizedBox(
+                const SizedBox(
                   height: 10,
                   width: 50,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),

@@ -28,18 +28,18 @@ class PokemonCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: Colors.orange.shade100,
+                color: Colors.orange.shade900.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.cached, size: 16, color: Colors.orange.shade700),
+                  Icon(Icons.cached, size: 16, color: Colors.orange.shade300),
                   const SizedBox(width: 4),
                   Text(
                     'From Cache',
                     style: TextStyle(
-                      color: Colors.orange.shade700,
+                      color: Colors.orange.shade300,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -50,7 +50,7 @@ class PokemonCard extends StatelessWidget {
           // Pokemon image
           Container(
             decoration: BoxDecoration(
-              color: Colors.grey[100],
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(16),
             ),
             child: Image.network(
@@ -139,7 +139,7 @@ class PokemonCard extends StatelessWidget {
                               flex: 4,
                               child: LinearProgressIndicator(
                                 value: stat.baseStat / 255,
-                                backgroundColor: Colors.grey[300],
+                                backgroundColor: Colors.grey[700],
                               ),
                             ),
                           ],

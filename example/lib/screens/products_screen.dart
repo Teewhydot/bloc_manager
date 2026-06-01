@@ -163,7 +163,7 @@ class ProductsScreen extends StatelessWidget {
                                 errorBuilder:
                                     (context, error, stackTrace) =>
                                         Container(
-                                  color: Colors.grey[200],
+                                  color: Colors.grey[800],
                                   child: const Icon(
                                     Icons.image_not_supported,
                                     size: 48,
@@ -174,7 +174,7 @@ class ProductsScreen extends StatelessWidget {
                                     (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
                                   return Container(
-                                    color: Colors.grey[100],
+                                    color: Colors.grey[800],
                                     child: Center(
                                       child: CircularProgressIndicator(
                                         value: loadingProgress

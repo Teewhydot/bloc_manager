@@ -21,7 +21,7 @@ class PostCardSkeleton extends StatelessWidget {
               width: 40,
               height: 40,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Color(0xFF424242),
                 shape: BoxShape.circle,
               ),
             ),
@@ -36,7 +36,7 @@ class PostCardSkeleton extends StatelessWidget {
                     height: 14,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -46,7 +46,7 @@ class PostCardSkeleton extends StatelessWidget {
                     height: 14,
                     width: 180,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -56,7 +56,7 @@ class PostCardSkeleton extends StatelessWidget {
                     height: 12,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -66,7 +66,7 @@ class PostCardSkeleton extends StatelessWidget {
                     height: 12,
                     width: 140,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),

@@ -23,7 +23,7 @@ class TodoCardSkeleton extends StatelessWidget {
               height: 20,
               margin: const EdgeInsets.only(left: 8, right: 16),
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Color(0xFF424242),
                 borderRadius: BorderRadius.all(Radius.circular(3)),
               ),
             ),
@@ -37,7 +37,7 @@ class TodoCardSkeleton extends StatelessWidget {
                     height: 14,
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -47,7 +47,7 @@ class TodoCardSkeleton extends StatelessWidget {
                     height: 14,
                     width: 160,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -57,7 +57,7 @@ class TodoCardSkeleton extends StatelessWidget {
                     height: 12,
                     width: 80,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -67,7 +67,7 @@ class TodoCardSkeleton extends StatelessWidget {
                     height: 10,
                     width: 50,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -83,7 +83,7 @@ class TodoCardSkeleton extends StatelessWidget {
                   height: 24,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF424242),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -92,7 +92,7 @@ class TodoCardSkeleton extends StatelessWidget {
                   height: 24,
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: Color(0xFF424242),
                     shape: BoxShape.circle,
                   ),
                 ),

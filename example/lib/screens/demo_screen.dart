@@ -27,7 +27,7 @@ class SkeletonListItem extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[800],
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -36,32 +36,32 @@ class SkeletonListItem extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.grey[800]!,
               shape: BoxShape.circle,
             ),
           ),
           const SizedBox(width: 12),
           // Text lines
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 14,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),
                 ),
-                SizedBox(height: 8),
-                SizedBox(
+                const SizedBox(height: 8),
+                const SizedBox(
                   height: 12,
                   child: DecoratedBox(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Color(0xFF424242),
                       borderRadius: BorderRadius.all(Radius.circular(4)),
                     ),
                   ),
@@ -83,7 +83,7 @@ class SkeletonGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[800],
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -92,8 +92,8 @@ class SkeletonGridItem extends StatelessWidget {
           // Image area
           Expanded(
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: Colors.grey[800]!,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
@@ -111,7 +111,7 @@ class SkeletonGridItem extends StatelessWidget {
                   height: 12,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -120,7 +120,7 @@ class SkeletonGridItem extends StatelessWidget {
                   height: 10,
                   width: 60,
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Colors.grey[800],
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -143,7 +143,7 @@ class SkeletonRowItem extends StatelessWidget {
       width: 140,
       height: 180,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[800],
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -153,8 +153,8 @@ class SkeletonRowItem extends StatelessWidget {
           Container(
             width: 56,
             height: 56,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: Colors.grey[800]!,
               shape: BoxShape.circle,
             ),
           ),
@@ -163,7 +163,7 @@ class SkeletonRowItem extends StatelessWidget {
             width: 80,
             height: 12,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -172,7 +172,7 @@ class SkeletonRowItem extends StatelessWidget {
             width: 60,
             height: 10,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -320,16 +320,16 @@ class _CustomShimmerDemoState extends State<CustomShimmerDemo> {
         orientation: SkeletonOrientation.list,
         spacing: 10.0,
       ),
-      skeletonBaseColor: Colors.blue.withValues(alpha: 0.15),
-      skeletonHighlightColor: Colors.blue.withValues(alpha: 0.4),
+      skeletonBaseColor: Colors.blue.withValues(alpha: 0.3),
+      skeletonHighlightColor: Colors.blue.withValues(alpha: 0.6),
       showResultSuccessNotifications: true,
       child: Container(
         padding: const EdgeInsets.all(16),
         margin: const EdgeInsets.symmetric(horizontal: 16),
         decoration: BoxDecoration(
-          color: Colors.blue.withValues(alpha: 0.05),
+          color: Colors.blue.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.blue.withValues(alpha: 0.2)),
+          border: Border.all(color: Colors.blue.withValues(alpha: 0.3)),
         ),
         child: Column(
           children: [
@@ -370,9 +370,9 @@ class SkeletonAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CircleAvatar(
+    return CircleAvatar(
       radius: 30,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[800],
     );
   }
 }
@@ -393,7 +393,7 @@ class SkeletonTextLine extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[800],
         borderRadius: BorderRadius.circular(4),
       ),
     );
@@ -410,7 +410,7 @@ class SkeletonStat extends StatelessWidget {
       width: 64,
       height: 48,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[800],
         borderRadius: BorderRadius.circular(8),
       ),
     );
@@ -516,9 +516,9 @@ class _InlineSkeletonDemoCardState extends State<InlineSkeletonDemoCard> {
                         Expanded(
                           child: InlineSkeleton(
                             isLoading: isLoading,
-                            skeleton: const Column(
+                            skeleton: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
+                              children: const [
                                 SkeletonTextLine(width: 160),
                                 SizedBox(height: 8),
                                 SkeletonTextLine(width: double.infinity),

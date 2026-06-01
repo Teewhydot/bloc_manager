@@ -101,7 +101,7 @@ class TodosScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.1),
+                            color: Colors.blue.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: Icon(
@@ -141,9 +141,9 @@ class TodosScreen extends StatelessWidget {
                 // LoadingState — shimmer skeleton placeholders
                 if (state is LoadingState) {
                   return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
-                    child: const SingleChildScrollView(
+                    baseColor: Colors.grey[700]!,
+                    highlightColor: Colors.grey[600]!,
+                    child: SingleChildScrollView(
                       padding: EdgeInsets.symmetric(vertical: 6),
                       child: TodoSkeletonList(),
                     ),
@@ -159,7 +159,7 @@ class TodosScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.purple.withValues(alpha: 0.1),
+                            color: Colors.purple.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.inbox,
@@ -197,7 +197,7 @@ class TodosScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(16),
                           decoration: BoxDecoration(
-                            color: Colors.red.withValues(alpha: 0.1),
+                            color: Colors.red.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(Icons.error_outline,
@@ -245,7 +245,7 @@ class TodosScreen extends StatelessWidget {
                       // Summary header
                       Container(
                         padding: const EdgeInsets.all(12),
-                        color: Colors.green.withValues(alpha: 0.1),
+                        color: Colors.green.withValues(alpha: 0.2),
                         child: Row(
                           children: [
                             const Icon(Icons.check_circle,
@@ -396,7 +396,7 @@ class TodosScreen extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      color: color.withValues(alpha: 0.1),
+      color: color.withValues(alpha: 0.2),
       child: Row(
         children: [
           Icon(icon, color: color, size: 20),

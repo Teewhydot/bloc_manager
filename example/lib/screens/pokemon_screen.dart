@@ -102,8 +102,8 @@ class _PokemonScreenState extends State<PokemonScreen> {
                 // LoadingState — shimmer skeleton
                 if (state is LoadingState) {
                   return Shimmer.fromColors(
-                    baseColor: Colors.grey[300]!,
-                    highlightColor: Colors.grey[100]!,
+                    baseColor: Colors.grey[700]!,
+                    highlightColor: Colors.grey[600]!,
                     child: const PokemonCardSkeleton(),
                   );
                 }

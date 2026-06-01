@@ -17,13 +17,13 @@ class BlocManagerExampleApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocManagerTheme(
       data: BlocManagerThemeData(
-        // Custom loading config with branded spinner and blue tint
+        // Custom loading config with branded spinner and teal tint
         loadingConfig: const FullScreenLoadingConfig(
           loadingWidget: SpinKitFoldingCube(
             color: Colors.white,
             size: 50.0,
           ),
-          overlayColor: Color(0x4D2196F3), // blue at ~30% opacity
+          overlayColor: Color(0x6600897B), // teal at ~40% opacity
         ),
 
         // Custom error handler - shows red snackbar
@@ -59,8 +59,13 @@ class BlocManagerExampleApp extends StatelessWidget {
         title: 'Bloc Manager Example',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.teal,
+            brightness: Brightness.dark,
+          ),
           useMaterial3: true,
+          scaffoldBackgroundColor: const Color(0xFF121212),
         ),
         home: const HomeScreen(),
       ),

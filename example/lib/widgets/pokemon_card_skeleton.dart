@@ -19,7 +19,7 @@ class PokemonCardSkeleton extends StatelessWidget {
             height: 200,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(16),
             ),
           ),
@@ -29,7 +29,7 @@ class PokemonCardSkeleton extends StatelessWidget {
             height: 28,
             width: 160,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(6),
             ),
           ),
@@ -39,7 +39,7 @@ class PokemonCardSkeleton extends StatelessWidget {
             height: 20,
             width: 80,
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.grey[800],
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -66,7 +66,7 @@ class PokemonCardSkeleton extends StatelessWidget {
                     height: 20,
                     width: 60,
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Colors.grey[800],
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
@@ -85,7 +85,7 @@ class PokemonCardSkeleton extends StatelessWidget {
                               height: 12,
                               width: 50,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.grey[800],
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
@@ -97,7 +97,7 @@ class PokemonCardSkeleton extends StatelessWidget {
                               height: 14,
                               width: 24,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.grey[800],
                                 borderRadius: BorderRadius.circular(3),
                               ),
                             ),
@@ -108,7 +108,7 @@ class PokemonCardSkeleton extends StatelessWidget {
                             child: Container(
                               height: 8,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.grey[800],
                                 borderRadius: BorderRadius.circular(4),
                               ),
                             ),
@@ -139,9 +139,9 @@ class PokemonCardSkeleton extends StatelessWidget {
     return Container(
       height: 32,
       width: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+      decoration: const BoxDecoration(
+        color: Color(0xFF424242),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
     );
   }
@@ -156,7 +156,7 @@ class PokemonCardSkeleton extends StatelessWidget {
               width: 24,
               height: 24,
               decoration: const BoxDecoration(
-                color: Colors.white,
+                color: Color(0xFF424242),
                 shape: BoxShape.circle,
               ),
             ),
@@ -165,7 +165,7 @@ class PokemonCardSkeleton extends StatelessWidget {
               height: 12,
               width: 40,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey[800],
                 borderRadius: BorderRadius.circular(3),
               ),
             ),
@@ -174,7 +174,7 @@ class PokemonCardSkeleton extends StatelessWidget {
               height: 18,
               width: 60,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.grey[800],
                 borderRadius: BorderRadius.circular(4),
               ),
             ),

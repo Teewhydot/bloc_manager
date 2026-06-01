@@ -1,4 +1,10 @@
 
+## [1.5.0] - 2026-06-01
+
+### Changed
+- Example app switched to dark mode for better loading type testing.
+- Updated README with comprehensive documentation for LoadingConfig styles, SkeletonConfig, InlineSkeleton, and all latest features.
+
 ## [1.4.0] - 2026-05-29
 
 ### Added
