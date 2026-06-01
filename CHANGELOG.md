@@ -1,4 +1,11 @@
 
+## [1.5.2] - 2026-06-01
+
+### Changed
+- Updated `pubspec.yaml` description to be within the recommended 60–180 character limit for pub.dev listings.
+- Upgraded `bloc` constraint to `^9.0.0` and `flutter_bloc` to `^9.0.0` to support latest versions.
+- Upgraded `bloc_test` dev dependency to `^10.0.0` for compatibility with bloc 9.x.
+
 ## [1.5.1] - 2026-06-01
 
 ### Fixed

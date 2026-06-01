@@ -10,7 +10,7 @@ class DemoLoadingCubit extends BaseCubit<BaseState<String>> {
 
   Future<void> simulateLoading() async {
     emitLoading();
-    await Future.delayed(const Duration(seconds: 13));
+    await Future.delayed(const Duration(seconds: 4));
     emit(const LoadedState(data: 'Data loaded successfully!'));
     emitSuccess('Success!');
   }

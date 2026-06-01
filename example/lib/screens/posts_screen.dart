@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_manager/bloc_manager.dart';
 import 'package:bloc_manager_example/cubits/posts/posts_cubit.dart';
-import 'package:bloc_manager_example/widgets/post_card_skeleton.dart';
 
 /// Posts Screen demonstrates PaginationBlocMixin.
 /// Shows infinite scroll pagination of posts from JSONPlaceholder API.
