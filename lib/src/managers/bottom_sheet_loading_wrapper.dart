@@ -70,7 +70,11 @@ class _BottomSheetLoadingWrapperState extends State<BottomSheetLoadingWrapper>
       overlayNeedsRebuild = true;
     }
     if (overlayNeedsRebuild && _overlayEntry != null) {
-      _overlayEntry!.markNeedsBuild();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && _overlayEntry != null) {
+          _overlayEntry!.markNeedsBuild();
+        }
+      });
     }
 
     if (widget.isLoading && !oldWidget.isLoading) {

@@ -1,4 +1,9 @@
 
+## [1.5.1] - 2026-06-01
+
+### Fixed
+- `BottomSheetLoadingWrapper` no longer throws "setState() or markNeedsBuild() called during build" when `loadingWidget` or `overlayColor` changes while the overlay is visible. The overlay rebuild is now deferred to the next frame.
+
 ## [1.5.0] - 2026-06-01
 
 ### Changed
