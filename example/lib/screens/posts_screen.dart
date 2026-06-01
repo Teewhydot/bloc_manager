@@ -57,17 +57,7 @@ class _PostsScreenState extends State<PostsScreen> {
       body: BlocManager<PostsCubit, BaseState<List<dynamic>>>(
         bloc: cubit,
         showLoadingIndicator: true,
-        loadingConfig: const FrostedGlassLoadingConfig(
-          overlayColor: Color(0x4DF44336), // red at ~30% opacity
-        ),
-
-        // skeletonConfig: SkeletonConfig(
-        //   builder: (context, index) => const PostCardSkeleton(),
-        //   count: 6,
-        //   orientation: SkeletonOrientation.list,
-        //   spacing: 6.0,
-        // ),
-
+        loadingConfig: const FrostedGlassLoadingConfig(),
         child: const SizedBox.shrink(),
         builder: (context, state) {
           if (state is ErrorState) {

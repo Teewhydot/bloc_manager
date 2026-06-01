@@ -11,6 +11,9 @@ pagination, and pull-to-refresh.
 - **`BaseState<T>`** – sealed state hierarchy (`InitialState`, `LoadingState`, `SuccessState`, `ErrorState`, `LoadedState`, `EmptyState` and async variants).
 - **`BaseCubit<S>` / `BaseBloc<E,S>`** – base classes with `emitLoading()`, `emitSuccess()`, `emitError()`, and `executeAsync()` helpers.
 - **`BlocManager<B,S>`** – a `BlocConsumer` wrapper that automatically shows loading overlays, error snackbars, and success snackbars.
+- **`LoadingConfig`** – pluggable loading indicator styles: full-screen overlay, bottom sheet, top progress bar, and frosted glass.
+- **`SkeletonConfig` / `InlineSkeleton`** – shimmer-animated skeleton placeholders for smooth loading states.
+- **`BlocManagerTheme`** – app-wide branding for loading, error, and success behaviour.
 - **Mixins** – `CacheableBlocMixin`, `PaginationBlocMixin`, `RefreshableBlocMixin`.
 
 ---
@@ -19,7 +22,7 @@ pagination, and pull-to-refresh.
 
 ```yaml
 dependencies:
-  bloc_manager: ^1.1.0
+  bloc_manager: ^1.4.0
 ```
 
 ```sh
@@ -40,14 +43,23 @@ dependencies:
 
 ### 1 · `BlocManagerTheme` — app-wide branding
 
-Instead of repeating `loadingColor`, `onError`, and `onSuccess` on every `BlocManager` instance,
+Instead of repeating `loadingConfig`, `onError`, and `onSuccess` on every `BlocManager` instance,
 set them once at the app root and have every instance inherit automatically.
 
 ```dart
 // In MyApp.build() — wrap your MaterialApp / GetMaterialApp
 BlocManagerTheme(
   data: BlocManagerThemeData(
-    loadingColor: AppColors.primary.withValues(alpha: 0.5),
+    // Choose a global loading style
+    loadingConfig: const FullScreenLoadingConfig(
+      loadingWidget: SpinKitFoldingCube(color: Colors.white, size: 50.0),
+      overlayColor: Color(0x4D2196F3), // blue at ~30% opacity
+    ),
+
+    // Global shimmer colours for skeleton loading
+    skeletonBaseColor: Colors.grey[300],
+    skeletonHighlightColor: Colors.grey[100],
+
     onError: (context, message) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -77,8 +89,10 @@ Now every `BlocManager` in the tree will use these handlers without any extra co
 
 | Field | Type | Default | Description |
 |---|---|---|---|
-| `loadingWidget` | `Widget?` | `null` | Global spinner (default: `SpinKitCircle`) |
-| `loadingColor` | `Color?` | `null` | Global overlay tint colour |
+| `loadingConfig` | `LoadingConfig?` | `null` | Global loading indicator style — falls back to `FullScreenLoadingConfig` |
+| `skeletonConfig` | `SkeletonConfig?` | `null` | Global skeleton placeholder configuration |
+| `skeletonBaseColor` | `Color?` | `null` | Global shimmer base colour (default: `Colors.grey[300]`) |
+| `skeletonHighlightColor` | `Color?` | `null` | Global shimmer highlight colour (default: `Colors.grey[100]`) |
 | `onError` | `void Function(BuildContext, String)?` | `null` | Global error handler — replaces the built-in red snackbar |
 | `onSuccess` | `void Function(BuildContext, String?)?` | `null` | Global success handler — replaces the built-in green snackbar |
 | `showResultErrorNotifications` | `bool` | `true` | Show error notifications when no `onError` is set |
@@ -90,7 +104,7 @@ For each setting, `BlocManager` resolves in this order:
 
 1. **Instance param** — explicit value passed directly to the `BlocManager` widget
 2. **`BlocManagerTheme`** — value from the nearest `BlocManagerTheme` ancestor
-3. **Built-in default** — package default (e.g. red snackbar for errors)
+3. **Built-in default** — package default (e.g. `FullScreenLoadingConfig` for loading, red snackbar for errors)
 
 #### Per-instance overrides still work
 
@@ -113,7 +127,95 @@ BlocManager<AuthCubit, BaseState<AuthData>>(
 
 ---
 
-### 2 · States — no subclassing needed
+### 2 · Loading Config styles
+
+Pass a typed `LoadingConfig` to `BlocManager.loadingConfig` (or set it globally via `BlocManagerThemeData.loadingConfig`) to choose how the loading indicator is presented.
+
+#### `FullScreenLoadingConfig` (default)
+
+A full-screen overlay that obscures the content underneath.
+
+```dart
+BlocManager<AuthCubit, BaseState<AuthData>>(
+  bloc: cubit,
+  loadingConfig: const FullScreenLoadingConfig(
+    loadingWidget: SpinKitCircle(color: Colors.white, size: 50.0),
+    overlayColor: Color(0x4D2196F3), // blue tint
+  ),
+  child: MyScreen(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `loadingWidget` | `Widget?` | `SpinKitCircle` | Custom spinner widget |
+| `overlayColor` | `Color?` | Primary at 50% opacity | Tint colour for the overlay |
+
+#### `BottomSheetLoadingConfig`
+
+A slide-up bottom sheet anchored to the bottom of the screen. Keeps the existing content visible underneath.
+
+```dart
+BlocManager<TodosCubit, BaseState<List<Todo>>>(
+  bloc: cubit,
+  loadingConfig: const BottomSheetLoadingConfig(
+    overlayColor: Colors.transparent,
+    trailingWidget: Icon(Icons.check_circle, color: Colors.green),
+  ),
+  child: TodosList(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `loadingWidget` | `Widget?` | `BlocBottomSheetWidget` | Custom widget inside the bottom sheet |
+| `overlayColor` | `Color?` | Primary at 50% opacity | Screen tint behind the bottom sheet |
+| `trailingWidget` | `Widget?` | `null` | Trailing widget on the right (ignored when `loadingWidget` is set) |
+
+#### `TopProgressBarLoadingConfig`
+
+A thin linear progress bar pinned to the top edge (YouTube-style). Non-intrusive — keeps the full UI visible.
+
+```dart
+BlocManager<PostsCubit, BaseState<List<Post>>>(
+  bloc: cubit,
+  loadingConfig: const TopProgressBarLoadingConfig(
+    progressColor: Colors.teal,
+  ),
+  child: PostsList(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `progressColor` | `Color?` | Theme primary | Colour of the progress bar |
+
+#### `FrostedGlassLoadingConfig`
+
+A frosted glass (blurred backdrop) loading overlay using `BackdropFilter`.
+
+```dart
+BlocManager<PostsCubit, BaseState<List<Post>>>(
+  bloc: cubit,
+  loadingConfig: const FrostedGlassLoadingConfig(
+    sigmaX: 12.0,
+    sigmaY: 12.0,
+    overlayColor: Color(0x26FFFFFF), // white at ~15%
+  ),
+  child: PostsList(),
+)
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `loadingWidget` | `Widget?` | `SpinKitCircle` | Custom spinner widget |
+| `overlayColor` | `Color?` | White at 15% opacity | Tint colour for the glass overlay |
+| `sigmaX` | `double` | `12.0` | Blur sigma on the X axis |
+| `sigmaY` | `double` | `12.0` | Blur sigma on the Y axis |
+
+---
+
+### 3 · States — no subclassing needed
 
 You do not need to declare any custom state classes. Just pick from the sealed hierarchy:
 
@@ -138,7 +240,7 @@ emit(const EmptyState<User>(message: 'No results found'));
 
 ---
 
-### 3 · `BaseCubit` — async made simple
+### 4 · `BaseCubit` — async made simple
 
 ```dart
 class UserCubit extends BaseCubit<BaseState<User>> {
@@ -178,9 +280,11 @@ Future<void> executeAsync<T>(
 
 ---
 
-### 4 · `BlocManager` — declarative UI wiring
+### 5 · `BlocManager` — declarative UI wiring
 
 Replaces the manual `BlocConsumer` + loading-check + snackbar boilerplate:
+
+#### With `onSuccess` / `onError` callbacks
 
 ```dart
 BlocManager<UserCubit, BaseState<User>>(
@@ -191,8 +295,39 @@ BlocManager<UserCubit, BaseState<User>>(
 )
 ```
 
+#### With `builder` — direct state-driven UI
+
+```dart
+BlocManager<UserCubit, BaseState<User>>(
+  bloc: context.read<UserCubit>(),
+  builder: (context, state) {
+    if (state is EmptyState) return const EmptyView();
+    if (state is LoadedState<User>) return DataView(state.data!);
+    return const SizedBox.shrink();
+  },
+  child: const SizedBox.shrink(), // ignored when builder is provided
+)
+```
+
+#### With skeleton loading
+
+```dart
+BlocManager<PostsCubit, BaseState<List<Post>>>(
+  bloc: cubit,
+  skeletonConfig: SkeletonConfig(
+    builder: (context, index) => const PostCardSkeleton(),
+    count: 6,
+    orientation: SkeletonOrientation.list,
+    spacing: 6.0,
+  ),
+  showLoadingIndicator: false, // disable overlay when using skeletons
+  child: PostsList(),
+)
+```
+
 This auto-wires:
-- Full-screen spinner during `LoadingState`
+- Skeleton placeholders during `LoadingState` / `InitialState` (when `skeletonConfig` is set)
+- Full-screen spinner during `LoadingState` (when `showLoadingIndicator` is true)
 - Red snackbar on `ErrorState` (disable with `showResultErrorNotifications: false`)
 - Green snackbar on `SuccessState` (opt-in with `showResultSuccessNotifications: true`)
 - `onSuccess` called for both `SuccessState` and `LoadedState`
@@ -210,16 +345,189 @@ This auto-wires:
 | `showLoadingIndicator` | `bool` | `true` | Full-screen overlay during `LoadingState` |
 | `showResultErrorNotifications` | `bool?` | `null` | Auto red snackbar on error; `null` inherits from `BlocManagerTheme` |
 | `showResultSuccessNotifications` | `bool?` | `null` | Auto green snackbar on success; `null` inherits from `BlocManagerTheme` |
+| `loadingConfig` | `LoadingConfig?` | `null` | Loading indicator style; `null` inherits from `BlocManagerTheme` |
+| `skeletonConfig` | `SkeletonConfig?` | `null` | Skeleton placeholder config; `null` inherits from `BlocManagerTheme` |
+| `skeletonBaseColor` | `Color?` | `null` | Shimmer base colour; `null` inherits from theme (default: `Colors.grey[300]`) |
+| `skeletonHighlightColor` | `Color?` | `null` | Shimmer highlight colour; `null` inherits from theme (default: `Colors.grey[100]`) |
 | `enablePullToRefresh` | `bool` | `false` | Wraps content in `RefreshIndicator` |
 | `onRefresh` | `Future<void> Function()?` | `null` | Pull-to-refresh callback |
-| `loadingWidget` | `Widget?` | `null` | Custom spinner (default: `SpinKitCircle`) |
-| `loadingColor` | `Color?` | `null` | Overlay tint colour |
 | `errorSnackbarColor` | `Color` | `#B00020` | Error snackbar background |
 | `successSnackbarColor` | `Color` | `#388E3C` | Success snackbar background |
 
 ---
 
-### 5 · `PaginationBlocMixin` — infinite scroll
+### 6 · Skeleton Loading
+
+Skeleton placeholders give users a visual preview of the layout while data is loading. `bloc_manager` supports two approaches: **full-screen skeletons** via `BlocManager` and **inline skeletons** for fine-grained control.
+
+#### `SkeletonConfig` — full-screen skeleton placeholders
+
+Pass a `SkeletonConfig` to `BlocManager.skeletonConfig` to show shimmer-animated skeleton items during loading states.
+
+```dart
+BlocManager<PostsCubit, BaseState<List<Post>>>(
+  bloc: cubit,
+  skeletonConfig: SkeletonConfig(
+    builder: (context, index) => const PostCardSkeleton(),
+    count: 6,
+    orientation: SkeletonOrientation.list,
+    spacing: 6.0,
+  ),
+  showLoadingIndicator: false, // disable overlay when using skeletons
+  child: const SizedBox.shrink(),
+  builder: (context, state) {
+    if (state is LoadedState<List<Post>>) {
+      return PostList(state.data!);
+    }
+    return const SizedBox.shrink();
+  },
+)
+```
+
+#### `SkeletonOrientation`
+
+Choose from four layout orientations:
+
+```dart
+// Vertical list (default)
+SkeletonOrientation.list
+
+// Grid layout
+SkeletonOrientation.grid
+
+// Horizontal scrollable row
+SkeletonOrientation.row
+
+// Flowing wrap layout
+SkeletonOrientation.wrap
+```
+
+**Grid example:**
+
+```dart
+SkeletonConfig(
+  builder: (context, index) => const ProductCardSkeleton(),
+  count: 8,
+  orientation: SkeletonOrientation.grid,
+  crossAxisCount: 2,
+  spacing: 12.0,
+)
+```
+
+**Horizontal row example:**
+
+```dart
+SkeletonConfig(
+  builder: (context, index) => const HorizontalCardSkeleton(),
+  count: 5,
+  orientation: SkeletonOrientation.row,
+  spacing: 12.0,
+)
+```
+
+#### `SkeletonConfig` fields
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `builder` | `Widget Function(BuildContext, int)` | required | Returns a skeleton placeholder widget for the given index |
+| `count` | `int` | required | Number of skeleton items to display |
+| `orientation` | `SkeletonOrientation` | `list` | Layout orientation |
+| `crossAxisCount` | `int?` | `null` | Number of columns for `grid` orientation |
+| `spacing` | `double` | `8.0` | Spacing between skeleton items |
+| `baseColor` | `Color?` | `null` | Shimmer base colour; inherits from theme |
+| `highlightColor` | `Color?` | `null` | Shimmer highlight colour; inherits from theme |
+| `enableShimmer` | `bool` | `true` | Set to `false` for static placeholders without animation |
+
+#### Custom shimmer colours
+
+Override shimmer colours per-instance or globally via `BlocManagerTheme`:
+
+```dart
+// Per-instance
+BlocManager<FeedCubit, BaseState<List<Article>>>(
+  bloc: cubit,
+  skeletonConfig: SkeletonConfig(
+    builder: (context, index) => const ArticleSkeleton(),
+    count: 5,
+    orientation: SkeletonOrientation.list,
+  ),
+  skeletonBaseColor: Colors.blue.withValues(alpha: 0.15),
+  skeletonHighlightColor: Colors.blue.withValues(alpha: 0.4),
+  child: ArticleList(),
+)
+
+// Global (via theme)
+BlocManagerTheme(
+  data: BlocManagerThemeData(
+    skeletonBaseColor: Colors.blue.withValues(alpha: 0.15),
+    skeletonHighlightColor: Colors.blue.withValues(alpha: 0.4),
+  ),
+  child: MaterialApp(…),
+)
+```
+
+#### `InlineSkeleton` — fine-grained skeleton control
+
+Use `InlineSkeleton` to selectively skeletonize individual parts of your UI while keeping the rest visible and interactive.
+
+```dart
+BlocBuilder<UserCubit, BaseState<User>>(
+  builder: (context, state) {
+    final isLoading = state.isLoading;
+    return Row(
+      children: [
+        // Avatar — independently skeletonised
+        InlineSkeleton(
+          isLoading: isLoading,
+          skeleton: const CircleAvatar(radius: 30, backgroundColor: Colors.white),
+          child: CircleAvatar(
+            radius: 30,
+            backgroundImage: NetworkImage(user.avatarUrl),
+          ),
+        ),
+        const SizedBox(width: 16),
+        // Text body — independently skeletonised
+        Expanded(
+          child: InlineSkeleton(
+            isLoading: isLoading,
+            skeleton: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(height: 14, width: 160, color: Colors.white),
+                const SizedBox(height: 8),
+                Container(height: 12, width: double.infinity, color: Colors.white),
+              ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 4),
+                Text(user.email, style: const TextStyle(color: Colors.grey)),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  },
+)
+```
+
+`InlineSkeleton` fields:
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `isLoading` | `bool` | required | Whether to show the skeleton placeholder |
+| `skeleton` | `Widget` | required | The skeleton widget shown while loading |
+| `child` | `Widget` | required | The real content widget shown when loaded |
+| `baseColor` | `Color?` | `null` | Shimmer base colour; inherits from theme |
+| `highlightColor` | `Color?` | `null` | Shimmer highlight colour; inherits from theme |
+| `enableShimmer` | `bool` | `true` | Set to `false` for static placeholders |
+
+---
+
+### 7 · `PaginationBlocMixin` — infinite scroll
 
 ```dart
 class ProductsCubit extends BaseCubit<BaseState<List<Product>>>
@@ -269,7 +577,7 @@ NotificationListener<ScrollNotification>(
 
 ---
 
-### 6 · `CacheableBlocMixin` — in-memory TTL cache
+### 8 · `CacheableBlocMixin` — in-memory TTL cache
 
 ```dart
 class ProfileCubit extends BaseCubit<BaseState<Profile>>
@@ -302,7 +610,7 @@ class ProfileCubit extends BaseCubit<BaseState<Profile>>
 
 ---
 
-### 7 · `RefreshableBlocMixin` — pull-to-refresh + auto-refresh
+### 9 · `RefreshableBlocMixin` — pull-to-refresh + auto-refresh
 
 ```dart
 class FeedCubit extends BaseCubit<BaseState<List<Article>>>
@@ -348,13 +656,14 @@ BaseState<T>                ─ isInitial / isLoading / isLoaded /
 ├── LoadingState<T>           message?, progress?
 ├── LoadedState<T>            data, lastUpdated?, isFromCache
 ├── SuccessState<T>           successMessage, metadata?
-├── ErrorState<T>             errorMessage, errorCode?, exception?
+├── ErrorState<T>             errorMessage, errorCode?, exception?, stackTrace?
 ├── EmptyState<T>             message?
 │
 │   ── Async (stream / real-time) variants ──
-├── AsyncLoadingState<T>      data? (stale), message?, isRefreshing
+├── AsyncLoadingState<T>      data? (stale), message?, progress?, isRefreshing
 ├── AsyncLoadedState<T>       data, lastUpdated, isFromCache
-└── AsyncErrorState<T>        data? (stale), errorMessage, isRetryable
+└── AsyncErrorState<T>        data? (stale), errorMessage, errorCode?, exception?,
+                              isRetryable
 ```
 
 All states extend `Equatable` and have descriptive `toString()` for logging.
@@ -373,6 +682,7 @@ The example app uses **real public APIs** to showcase production-ready implement
 | **Pokemon** | CacheableBlocMixin | PokeAPI | In-memory caching with 10-minute TTL and visual "From Cache" badge |
 | **Products** | RefreshableBlocMixin | Fake Store API | Pull-to-refresh + auto-refresh every 30 seconds |
 | **Todos** | All BaseState types | JSONPlaceholder Todos | Complete state flow: Initial → Loading → Loaded → Success/Error/Empty |
+| **Demo** | LoadingConfig + Skeletons | — | All loading styles (full-screen, bottom-sheet, top-bar, frosted glass) + skeleton layouts (list, grid, row, custom colours, inline) |
 
 ### Running the Example
 
@@ -407,6 +717,12 @@ Each tab is self-contained and demonstrates real-world patterns:
    - SuccessState snackbars on actions
    - Force error button for testing ErrorState
 
+5. **Demo Tab** - Loading and skeleton showcase with:
+   - Full-screen overlay, bottom sheet, top progress bar, and frosted glass loading styles
+   - List, grid, and horizontal row skeleton layouts
+   - Custom shimmer colour configurations
+   - InlineSkeleton for fine-grained per-widget skeleton loading
+
 ### Architecture
 
 ```
@@ -417,7 +733,7 @@ example/
 │   ├── repositories/             # Dio-based API client + repos
 │   ├── cubits/                   # All feature cubits
 │   ├── screens/                  # Tab screens
-│   └── widgets/                  # PokemonCard, LoadingCard, ErrorCard
+│   └── widgets/                  # PokemonCard, LoadingCard, ErrorCard, skeleton widgets
 └── README.md                     # Example-specific docs
 ```
 
@@ -453,7 +769,7 @@ Created and maintained by **Abubakar Issa**.
 |---|---|
 | 🐙 GitHub | [github.com/Teewhydot/bloc_manager](https://github.com/Teewhydot/bloc_manager) |
 | 💼 LinkedIn | [linkedin.com/in/issa-abubakar-a0a200189](https://www.linkedin.com/in/issa-abubakar-a0a200189/) |
-| 🌐 Portfolio | [sirteefyapps.com.ng](https://sirteefyapps.com.ng/)
+| 🌐 Portfolio | [sirteefyapps.com.ng](https://sirteefyapps.com.ng/) |
 
 ---
 
