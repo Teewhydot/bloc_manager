@@ -10,7 +10,7 @@ import '../widgets/skeleton_widget.dart';
 import 'bloc_manager_theme.dart';
 import 'bottom_sheet_loading_wrapper.dart';
 import 'frosted_glass_loading_wrapper.dart';
-import 'loading_indicator_style.dart';
+import 'loading_config.dart';
 import 'top_progress_bar_loading_wrapper.dart';
 
 /// A declarative widget that wraps a BLoC/Cubit and handles the common
@@ -52,6 +52,18 @@ import 'top_progress_bar_loading_wrapper.dart';
 ///   child: const SizedBox.shrink(), // ignored when builder is provided
 /// )
 /// ```
+///
+/// ## With loading config
+/// ```dart
+/// BlocManager<MyCubit, BaseState<MyData>>(
+///   bloc: context.read<MyCubit>(),
+///   loadingConfig: const BottomSheetLoadingConfig(
+///     overlayColor: Colors.transparent,
+///     trailingWidget: Icon(Icons.check_circle, color: Colors.green),
+///   ),
+///   child: MyScreen(),
+/// )
+/// ```
 class BlocManager<T extends BlocBase<S>, S extends BaseState>
     extends StatelessWidget {
   // ── Required ──────────────────────────────────────────────────────────────
@@ -79,7 +91,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
 
   // ── Behaviour flags ───────────────────────────────────────────────────────
 
-  /// Show a full-screen loading overlay during [LoadingState]. Default: true.
+  /// Show a loading indicator during [LoadingState]. Default: true.
   final bool showLoadingIndicator;
 
   /// Automatically show built-in error notifications for [ErrorState].
@@ -100,27 +112,30 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
 
   // ── Visual customisation ──────────────────────────────────────────────────
 
-  /// The style of the loading indicator.
-  /// `null` inherits from [BlocManagerTheme], then falls back to [LoadingIndicatorStyle.fullScreenOverlay].
-  final LoadingIndicatorStyle? loadingStyle;
-
-  /// Replaces the default [SpinKitCircle] while loading.
-  /// `null` inherits from [BlocManagerTheme], then falls back to SpinKitCircle.
-  final Widget? loadingWidget;
-
-  /// Optional trailing widget to display on the right side of the bottom sheet.
-  /// `null` inherits from [BlocManagerTheme].
-  final Widget? bottomSheetTrailingWidget;
-
-  /// Tint colour for the loading overlay.
-  /// `null` inherits from [BlocManagerTheme], then falls back to primary/50%.
-  final Color? loadingColor;
-
-  /// Background colour for the built-in error snackbar.
-  final Color errorSnackbarColor;
-
-  /// Background colour for the built-in success snackbar.
-  final Color successSnackbarColor;
+  /// Configuration for the loading indicator style and appearance.
+  ///
+  /// Pass a typed config class to choose the style and its parameters:
+  ///
+  /// ```dart
+  /// // Full-screen overlay (default)
+  /// loadingConfig: const FullScreenLoadingConfig(),
+  ///
+  /// // Bottom sheet anchored at the screen bottom
+  /// loadingConfig: const BottomSheetLoadingConfig(
+  ///   overlayColor: Colors.transparent,
+  ///   trailingWidget: Icon(Icons.check_circle),
+  /// ),
+  ///
+  /// // Thin top progress bar (YouTube-style)
+  /// loadingConfig: const TopProgressBarLoadingConfig(),
+  ///
+  /// // Blurred glass overlay
+  /// loadingConfig: FrostedGlassLoadingConfig(sigmaX: 8.0),
+  /// ```
+  ///
+  /// `null` (default) inherits from [BlocManagerTheme], then falls back to
+  /// [FullScreenLoadingConfig].
+  final LoadingConfig? loadingConfig;
 
   // ── Skeleton loading ──────────────────────────────────────────────────────
 
@@ -129,8 +144,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
   ///
   /// When set, skeleton widgets replace the content area while the bloc is
   /// loading, giving users a visual preview of the layout. The existing loading
-  /// overlay (spinner/bottom-sheet) still works alongside if
-  /// [showLoadingIndicator] is enabled.
+  /// indicator still works alongside if [showLoadingIndicator] is enabled.
   ///
   /// `null` (default) inherits from [BlocManagerTheme].
   final SkeletonConfig? skeletonConfig;
@@ -142,6 +156,14 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
   /// Shimmer highlight colour for skeleton loading.
   /// `null` inherits from [BlocManagerTheme], then falls back to `Colors.grey[100]`.
   final Color? skeletonHighlightColor;
+
+  // ── Snackbar colours ───────────────────────────────────────────────────────
+
+  /// Background colour for the built-in error snackbar.
+  final Color errorSnackbarColor;
+
+  /// Background colour for the built-in success snackbar.
+  final Color successSnackbarColor;
 
   const BlocManager({
     super.key,
@@ -156,10 +178,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
     this.showResultSuccessNotifications, // null = inherit from theme
     this.enablePullToRefresh = false,
     this.onRefresh,
-    this.loadingStyle, // null = inherit from theme
-    this.loadingWidget, // null = inherit from theme
-    this.bottomSheetTrailingWidget, // null = inherit from theme
-    this.loadingColor, // null = inherit from theme
+    this.loadingConfig, // null = inherit from theme
     this.skeletonConfig, // null = inherit from theme
     this.skeletonBaseColor, // null = inherit from theme
     this.skeletonHighlightColor, // null = inherit from theme
@@ -172,11 +191,8 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
     final theme = BlocManagerTheme.of(context);
 
     // Resolve effective values: instance → theme → built-in default
-    final effectiveLoadingWidget = loadingWidget ?? theme.loadingWidget;
-    final effectiveLoadingColor = loadingColor ?? theme.loadingColor;
-    final effectiveLoadingStyle = loadingStyle ?? theme.loadingStyle;
-    final effectiveTrailingWidget =
-        bottomSheetTrailingWidget ?? theme.bottomSheetTrailingWidget;
+    final effectiveLoadingConfig =
+        loadingConfig ?? theme.loadingConfig ?? const FullScreenLoadingConfig();
     final effectiveShowErrors =
         showResultErrorNotifications ?? theme.showResultErrorNotifications;
     final effectiveShowSuccess =
@@ -291,51 +307,100 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
             return result;
           }
 
-          // Keep the same loading wrapper in the tree and only toggle isLoading.
-          // This avoids disposing child state when loading starts or stops.
-          final overlayColor = effectiveLoadingColor ??
-              Theme.of(context).primaryColor.withValues(alpha: 0.5);
-
-          if (effectiveLoadingStyle == LoadingIndicatorStyle.bottomSheet) {
-            return BottomSheetLoadingWrapper(
-              isLoading: state.isLoading,
-              overlayColor: overlayColor,
-              loadingWidget: effectiveLoadingWidget ??
-                  BlocBottomSheetWidget(
-                      trailingWidget: effectiveTrailingWidget),
-              child: result,
-            );
-          }
-
-          if (effectiveLoadingStyle == LoadingIndicatorStyle.topProgressBar) {
-            return TopProgressBarLoadingWrapper(
-              isLoading: state.isLoading,
-              progressColor: effectiveLoadingColor ??
-                  Theme.of(context).colorScheme.primary,
-              child: result,
-            );
-          }
-
-          if (effectiveLoadingStyle == LoadingIndicatorStyle.frostedGlass) {
-            return FrostedGlassLoadingWrapper(
-              isLoading: state.isLoading,
-              overlayColor: effectiveLoadingColor ??
-                  const Color(0x26FFFFFF), // white at ~15% opacity
-              loadingWidget: effectiveLoadingWidget ??
-                  const SpinKitCircle(color: Colors.white, size: 50.0),
-              child: result,
-            );
-          }
-
-          return LoadingOverlay(
-            isLoading: state.isLoading,
-            color: overlayColor,
-            progressIndicator: effectiveLoadingWidget ??
-                const SpinKitCircle(color: Colors.white, size: 50.0),
-            child: result,
-          );
+          // Resolve loading style from the config
+          return _buildLoadingWrapper(context, effectiveLoadingConfig, state, result);
         },
       ),
+    );
+  }
+
+  /// Builds the appropriate loading wrapper based on the [LoadingConfig] type.
+  Widget _buildLoadingWrapper(
+    BuildContext context,
+    LoadingConfig config,
+    S state,
+    Widget child,
+  ) {
+    return switch (config) {
+      BottomSheetLoadingConfig _ => _buildBottomSheet(context, config, state, child),
+      TopProgressBarLoadingConfig _ => _buildTopProgressBar(context, config, state, child),
+      FrostedGlassLoadingConfig _ => _buildFrostedGlass(context, config, state, child),
+      FullScreenLoadingConfig _ => _buildFullScreen(context, config, state, child),
+    };
+  }
+
+  Widget _buildFullScreen(
+    BuildContext context,
+    FullScreenLoadingConfig config,
+    S state,
+    Widget child,
+  ) {
+    final overlayColor = config.overlayColor ??
+        Theme.of(context).primaryColor.withValues(alpha: 0.5);
+    final loadingWidget = config.loadingWidget ??
+        const SpinKitCircle(color: Colors.white, size: 50.0);
+
+    return LoadingOverlay(
+      isLoading: state.isLoading,
+      color: overlayColor,
+      progressIndicator: loadingWidget,
+      child: child,
+    );
+  }
+
+  Widget _buildBottomSheet(
+    BuildContext context,
+    BottomSheetLoadingConfig config,
+    S state,
+    Widget child,
+  ) {
+    final overlayColor = config.overlayColor ??
+        Theme.of(context).primaryColor.withValues(alpha: 0.5);
+    final loadingWidget = config.loadingWidget ??
+        BlocBottomSheetWidget(trailingWidget: config.trailingWidget);
+
+    return BottomSheetLoadingWrapper(
+      isLoading: state.isLoading,
+      overlayColor: overlayColor,
+      loadingWidget: loadingWidget,
+      child: child,
+    );
+  }
+
+  Widget _buildTopProgressBar(
+    BuildContext context,
+    TopProgressBarLoadingConfig config,
+    S state,
+    Widget child,
+  ) {
+    final progressColor =
+        config.progressColor ?? Theme.of(context).colorScheme.primary;
+
+    return TopProgressBarLoadingWrapper(
+      isLoading: state.isLoading,
+      progressColor: progressColor,
+      child: child,
+    );
+  }
+
+  Widget _buildFrostedGlass(
+    BuildContext context,
+    FrostedGlassLoadingConfig config,
+    S state,
+    Widget child,
+  ) {
+    final overlayColor =
+        config.overlayColor ?? const Color(0x26FFFFFF); // white at ~15%
+    final loadingWidget = config.loadingWidget ??
+        const SpinKitCircle(color: Colors.white, size: 50.0);
+
+    return FrostedGlassLoadingWrapper(
+      isLoading: state.isLoading,
+      overlayColor: overlayColor,
+      loadingWidget: loadingWidget,
+      sigmaX: config.sigmaX,
+      sigmaY: config.sigmaY,
+      child: child,
     );
   }
 

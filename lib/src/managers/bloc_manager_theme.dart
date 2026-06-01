@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../widgets/skeleton_config.dart';
-import 'loading_indicator_style.dart';
+import 'loading_config.dart';
 
 /// Global defaults for every [BlocManager] in the widget tree.
 ///
@@ -11,8 +11,9 @@ import 'loading_indicator_style.dart';
 /// ```dart
 /// BlocManagerTheme(
 ///   data: BlocManagerThemeData(
-///     loadingWidget: const MyBrandedSpinner(),
-///     loadingColor: Colors.black54,
+///     loadingConfig: const BottomSheetLoadingConfig(
+///       overlayColor: Colors.black54,
+///     ),
 ///     onError: (context, message) => MyToast.error(context, message),
 ///     onSuccess: (context, message) => MyToast.success(context, message),
 ///   ),
@@ -48,21 +49,12 @@ class BlocManagerTheme extends InheritedWidget {
 /// All fields are optional — unset fields fall back to the [BlocManager]
 /// built-in defaults.
 class BlocManagerThemeData {
-  /// The style of the loading indicator.
-  /// Defaults to [LoadingIndicatorStyle.fullScreenOverlay].
-  final LoadingIndicatorStyle loadingStyle;
-
-  /// Widget shown inside the loading overlay.
-  /// Defaults to a white [SpinKitCircle].
-  final Widget? loadingWidget;
-
-  /// Tint colour for the loading overlay.
-  /// Defaults to the primary colour at 50 % opacity.
-  /// Set to [Colors.transparent] to remove the tint completely.
-  final Color? loadingColor;
-
-  /// Optional trailing widget to display on the right side of the bottom sheet.
-  final Widget? bottomSheetTrailingWidget;
+  /// Default loading indicator configuration applied to all [BlocManager]
+  /// instances that do not provide their own [BlocManager.loadingConfig].
+  ///
+  /// When null, individual [BlocManager] instances default to
+  /// [FullScreenLoadingConfig].
+  final LoadingConfig? loadingConfig;
 
   // ── Skeleton loading ──────────────────────────────────────────────────────
 
@@ -96,10 +88,7 @@ class BlocManagerThemeData {
   final bool showResultSuccessNotifications;
 
   const BlocManagerThemeData({
-    this.loadingStyle = LoadingIndicatorStyle.fullScreenOverlay,
-    this.loadingWidget,
-    this.loadingColor,
-    this.bottomSheetTrailingWidget,
+    this.loadingConfig,
     this.skeletonConfig,
     this.skeletonBaseColor,
     this.skeletonHighlightColor,
@@ -114,10 +103,7 @@ class BlocManagerThemeData {
       identical(this, other) ||
       other is BlocManagerThemeData &&
           runtimeType == other.runtimeType &&
-          loadingStyle == other.loadingStyle &&
-          loadingWidget == other.loadingWidget &&
-          loadingColor == other.loadingColor &&
-          bottomSheetTrailingWidget == other.bottomSheetTrailingWidget &&
+          loadingConfig == other.loadingConfig &&
           skeletonConfig == other.skeletonConfig &&
           skeletonBaseColor == other.skeletonBaseColor &&
           skeletonHighlightColor == other.skeletonHighlightColor &&
@@ -128,10 +114,7 @@ class BlocManagerThemeData {
 
   @override
   int get hashCode => Object.hash(
-        loadingStyle,
-        loadingWidget,
-        loadingColor,
-        bottomSheetTrailingWidget,
+        loadingConfig,
         skeletonConfig,
         skeletonBaseColor,
         skeletonHighlightColor,

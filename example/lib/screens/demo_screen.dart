@@ -10,7 +10,7 @@ class DemoLoadingCubit extends BaseCubit<BaseState<String>> {
 
   Future<void> simulateLoading() async {
     emitLoading();
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 13));
     emit(const LoadedState(data: 'Data loaded successfully!'));
     emitSuccess('Success!');
   }
@@ -795,36 +795,22 @@ class SkeletonDemoSection extends StatelessWidget {
   }
 }
 
-// ─── Loading Styles Tab (existing demos) ────────────────────────────────────
+// ─── Loading Styles Tab ─────────────────────────────────────────────────────
 
 class LoadingStylesTab extends StatelessWidget {
   final DemoLoadingCubit cubit;
-  final LoadingIndicatorStyle currentStyle;
-  final Color? currentColor;
-  final Widget? currentLoadingWidget;
-  final ValueChanged<LoadingIndicatorStyle> onStyleChanged;
-  final ValueChanged<Color?> onColorChanged;
-  final ValueChanged<Widget?> onWidgetChanged;
+  final LoadingConfig currentConfig;
+  final ValueChanged<LoadingConfig> onConfigChanged;
 
   const LoadingStylesTab({
     super.key,
     required this.cubit,
-    required this.currentStyle,
-    required this.currentColor,
-    required this.currentLoadingWidget,
-    required this.onStyleChanged,
-    required this.onColorChanged,
-    required this.onWidgetChanged,
+    required this.currentConfig,
+    required this.onConfigChanged,
   });
 
-  void _triggerLoading(
-    LoadingIndicatorStyle style,
-    Color? color,
-    Widget? widget,
-  ) {
-    onStyleChanged(style);
-    onColorChanged(color);
-    onWidgetChanged(widget);
+  void _triggerLoading(LoadingConfig config) {
+    onConfigChanged(config);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       cubit.simulateLoading();
     });
@@ -863,11 +849,8 @@ class LoadingStylesTab extends StatelessWidget {
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => _triggerLoading(
-                      LoadingIndicatorStyle.fullScreenOverlay,
-                      null,
-                      null,
-                    ),
+                    onPressed: () =>
+                        _triggerLoading(const FullScreenLoadingConfig()),
                     child: const Text('Trigger Loading'),
                   ),
                 ],
@@ -897,11 +880,8 @@ class LoadingStylesTab extends StatelessWidget {
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => _triggerLoading(
-                      LoadingIndicatorStyle.bottomSheet,
-                      null,
-                      const BlocBottomSheetWidget(),
-                    ),
+                    onPressed: () =>
+                        _triggerLoading(const BottomSheetLoadingConfig()),
                     child: const Text('Trigger Loading'),
                   ),
                 ],
@@ -932,9 +912,8 @@ class LoadingStylesTab extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => _triggerLoading(
-                      LoadingIndicatorStyle.bottomSheet,
-                      Colors.transparent,
-                      const BlocBottomSheetWidget(
+                      const BottomSheetLoadingConfig(
+                        overlayColor: Colors.transparent,
                         trailingWidget: Padding(
                           padding: EdgeInsets.only(right: 8.0),
                           child:
@@ -972,9 +951,9 @@ class LoadingStylesTab extends StatelessWidget {
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () => _triggerLoading(
-                      LoadingIndicatorStyle.topProgressBar,
-                      Colors.teal,
-                      null,
+                      const TopProgressBarLoadingConfig(
+                        progressColor: Colors.teal,
+                      ),
                     ),
                     child: const Text('Trigger Loading'),
                   ),
@@ -1010,11 +989,8 @@ class LoadingStylesTab extends StatelessWidget {
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
                   ElevatedButton(
-                    onPressed: () => _triggerLoading(
-                      LoadingIndicatorStyle.frostedGlass,
-                      null,
-                      null,
-                    ),
+                    onPressed: () =>
+                        _triggerLoading(const FrostedGlassLoadingConfig()),
                     child: const Text('Trigger Loading'),
                   ),
                   const SizedBox(height: 4),
@@ -1043,9 +1019,7 @@ class DemoScreen extends StatefulWidget {
 
 class _DemoScreenState extends State<DemoScreen> {
   late final DemoLoadingCubit _cubit;
-  LoadingIndicatorStyle _currentStyle = LoadingIndicatorStyle.fullScreenOverlay;
-  Color? _currentColor;
-  Widget? _currentLoadingWidget;
+  LoadingConfig _currentConfig = const FullScreenLoadingConfig();
 
   @override
   void initState() {
@@ -1078,19 +1052,12 @@ class _DemoScreenState extends State<DemoScreen> {
             // ── Tab 1: Loading Styles ───────────────────────────────────
             BlocManager<DemoLoadingCubit, BaseState<String>>(
               bloc: _cubit,
-              loadingStyle: _currentStyle,
-              loadingColor: _currentColor,
-              loadingWidget: _currentLoadingWidget,
+              loadingConfig: _currentConfig,
               showResultSuccessNotifications: true,
               child: LoadingStylesTab(
                 cubit: _cubit,
-                currentStyle: _currentStyle,
-                currentColor: _currentColor,
-                currentLoadingWidget: _currentLoadingWidget,
-                onStyleChanged: (s) => setState(() => _currentStyle = s),
-                onColorChanged: (c) => setState(() => _currentColor = c),
-                onWidgetChanged: (w) =>
-                    setState(() => _currentLoadingWidget = w),
+                currentConfig: _currentConfig,
+                onConfigChanged: (c) => setState(() => _currentConfig = c),
               ),
             ),
 

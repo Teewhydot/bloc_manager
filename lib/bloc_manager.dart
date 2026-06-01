@@ -10,7 +10,7 @@ export 'src/base/base_bloc.dart';
 // ── Widget ───────────────────────────────────────────────────────────────────
 export 'src/managers/bloc_manager.dart';
 export 'src/managers/bloc_manager_theme.dart';
-export 'src/managers/loading_indicator_style.dart';
+export 'src/managers/loading_config.dart';
 
 // ── Mixins ───────────────────────────────────────────────────────────────────
 export 'src/mixins/cacheable_bloc_mixin.dart';

@@ -56,13 +56,18 @@ class _PostsScreenState extends State<PostsScreen> {
       ),
       body: BlocManager<PostsCubit, BaseState<List<dynamic>>>(
         bloc: cubit,
-        showLoadingIndicator: false,
-        skeletonConfig: SkeletonConfig(
-          builder: (context, index) => const PostCardSkeleton(),
-          count: 6,
-          orientation: SkeletonOrientation.list,
-          spacing: 6.0,
+        showLoadingIndicator: true,
+        loadingConfig: const FrostedGlassLoadingConfig(
+          overlayColor: Color(0x4DF44336), // red at ~30% opacity
         ),
+
+        // skeletonConfig: SkeletonConfig(
+        //   builder: (context, index) => const PostCardSkeleton(),
+        //   count: 6,
+        //   orientation: SkeletonOrientation.list,
+        //   spacing: 6.0,
+        // ),
+
         child: const SizedBox.shrink(),
         builder: (context, state) {
           if (state is ErrorState) {
@@ -93,6 +98,7 @@ class _PostsScreenState extends State<PostsScreen> {
             if (posts.isEmpty) {
               return const Center(child: Text('No posts available'));
             }
+
 
             return Column(
               children: [
@@ -156,6 +162,8 @@ class _PostsScreenState extends State<PostsScreen> {
                 ),
               ],
             );
+
+
           }
 
           return const SizedBox.shrink();
