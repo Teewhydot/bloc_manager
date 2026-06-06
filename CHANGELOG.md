@@ -1,4 +1,9 @@
 
+## [1.5.3] - 2026-06-06
+
+### Fixed
+- `SuccessState` now extends `DataState<T>` instead of `BaseState<T>`, allowing it to inherit and hold `data`. This prevents `BlocManager` from clearing out existing data when rendering a success state.
+
 ## [1.5.2] - 2026-06-01
 
 ### Changed

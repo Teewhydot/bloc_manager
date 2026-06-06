@@ -56,17 +56,17 @@ final class LoadingState<T> extends BaseState<T> {
   String toString() => 'LoadingState<$T>(message: $message)';
 }
 
-/// Operation completed successfully (no persistent data needed).
+/// Operation completed successfully.
 @immutable
-final class SuccessState<T> extends BaseState<T> implements AppSuccessState {
+final class SuccessState<T> extends DataState<T> implements AppSuccessState {
   @override
   final String successMessage;
   final Map<String, dynamic>? metadata;
 
-  const SuccessState({required this.successMessage, this.metadata});
+  const SuccessState({required this.successMessage, this.metadata, super.data});
 
   @override
-  List<Object?> get props => [successMessage, metadata];
+  List<Object?> get props => [successMessage, metadata, data];
 
   @override
   String toString() => 'SuccessState<$T>(message: $successMessage)';

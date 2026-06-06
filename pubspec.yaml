@@ -1,6 +1,6 @@
 name: bloc_manager
 description: Flutter BLoC management package that eliminates boilerplate code with sealed BaseState, BlocManager, and caching/pagination/refresh mixins.
-version: 1.5.2
+version: 1.5.3
 homepage: https://sirteefyapps.com.ng/
 repository: https://github.com/Teewhydot/bloc_manager
 issue_tracker: https://github.com/Teewhydot/bloc_manager/issues
