@@ -1,3 +1,7 @@
+## [1.5.4] - 2026-06-09
+
+### Fixed
+- `BlocManager` now correctly respects the local `effectiveShowSuccess` and `effectiveShowErrors` flags before falling back to `theme.onSuccess` or `theme.onError`.
 
 ## [1.5.3] - 2026-06-06
 

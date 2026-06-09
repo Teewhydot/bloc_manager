@@ -22,7 +22,7 @@ pagination, and pull-to-refresh.
 
 ```yaml
 dependencies:
-  bloc_manager: ^1.4.0
+  bloc_manager: ^1.5.4
 ```
 
 ```sh
