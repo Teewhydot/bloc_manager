@@ -238,7 +238,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
             if (onError != null) {
               // Instance-level handler takes full priority.
               onError!(context, state);
-            } else if (theme.onError != null) {
+            } else if (theme.onError != null && effectiveShowErrors) {
               // Theme-level handler — fires for all BlocManagers in the tree.
               theme.onError!(context, msg);
             } else if (effectiveShowErrors) {
@@ -254,7 +254,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
 
             if (onSuccess != null) {
               onSuccess!(context, state);
-            } else if (theme.onSuccess != null) {
+            } else if (theme.onSuccess != null && effectiveShowSuccess) {
               theme.onSuccess!(context, msg);
             } else if (effectiveShowSuccess && msg != null) {
               _showSnackbar(context, msg, successSnackbarColor);
@@ -271,7 +271,7 @@ class BlocManager<T extends BlocBase<S>, S extends BaseState>
 
             if (onSuccess != null) {
               onSuccess!(context, state);
-            } else if (theme.onSuccess != null) {
+            } else if (theme.onSuccess != null && effectiveShowSuccess) {
               theme.onSuccess!(context, msg);
             } else if (effectiveShowSuccess && msg != null) {
               _showSnackbar(context, msg, successSnackbarColor);
